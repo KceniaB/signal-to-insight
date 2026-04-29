@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wearable Signal Lab · Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --border:  #21262d;
+    --border2: #30363d;
+    --text:    #e6edf3;
+    --muted:   #8b949e;
+    --blue:    #58a6ff;
+    --green:   #3fb950;
+    --red:     #f78166;
+    --purple:  #d2a8ff;
+    --orange:  #ffa657;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.3;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8vw;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(88,166,255,0.08) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+    animation: pulse 6s ease-in-out infinite;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(63,185,80,0.06) 0%, transparent 70%);
+    bottom: 50px; right: 5vw;
+    pointer-events: none;
+    animation: pulse 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 0.7; }
+    50%      { transform: scale(1.15); opacity: 1; }
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    background: rgba(63,185,80,0.1);
+    border: 1px solid rgba(63,185,80,0.25);
+    border-radius: 4px;
+    padding: 4px 12px;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 7vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+
+  h1 span.accent { color: var(--blue); }
+  h1 span.accent2 { color: var(--purple); }
+
+  .hero-sub {
+    max-width: 600px;
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-bottom: 48px;
+    line-height: 1.75;
+  }
+
+  .hero-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #79b9ff; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border2);
+  }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px; left: 8vw;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .scroll-line {
+    width: 40px; height: 1px;
+    background: var(--border2);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 8vw;
+    background: rgba(13,17,23,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blue);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 8vw;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    max-width: 620px;
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 64px;
+    line-height: 1.75;
+  }
+
+  /* ── PROJECT CARDS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    border-color: var(--border2);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .card-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    transition: opacity 0.3s;
+  }
+
+  .card:hover .card-img { opacity: 0.92; }
+
+  .card-body {
+    padding: 24px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+
+  .badge-blue   { color: var(--blue);   border-color: rgba(88,166,255,0.3);   background: rgba(88,166,255,0.08); }
+  .badge-green  { color: var(--green);  border-color: rgba(63,185,80,0.3);    background: rgba(63,185,80,0.08); }
+  .badge-purple { color: var(--purple); border-color: rgba(210,168,255,0.3);  background: rgba(210,168,255,0.08); }
+  .badge-orange { color: var(--orange); border-color: rgba(255,166,87,0.3);   background: rgba(255,166,87,0.08); }
+  .badge-red    { color: var(--red);    border-color: rgba(247,129,102,0.3);  background: rgba(247,129,102,0.08); }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .card-footer a {
+    color: var(--blue);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .card-footer a:hover { color: #79b9ff; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.2s ease-out;
+  }
+
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(0.95) translateY(8px); }
+    to   { opacity:1; transform:scale(1)    translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+
+  .modal-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 1.4rem; cursor: pointer; padding: 4px;
+    line-height: 1; transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body { padding: 28px; }
+
+  .modal-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .modal-desc {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .method-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .method-item h4 {
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--blue);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .method-item p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── PIPELINE ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 48px 0;
+    max-width: 700px;
+  }
+
+  .pipe-step {
+    display: flex;
+    gap: 20px;
+    position: relative;
+    padding-bottom: 32px;
+  }
+
+  .pipe-step:last-child { padding-bottom: 0; }
+
+  .pipe-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 17px; top: 40px;
+    width: 2px;
+    bottom: 0;
+    background: linear-gradient(to bottom, var(--border2), var(--border));
+  }
+
+  .pipe-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--blue);
+    position: relative; z-index: 1;
+  }
+
+  .pipe-content h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .pipe-content p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 80px;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 24px;
+  }
+
+  .stat-val {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── TOOLS SECTION ── */
+  .tools-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tool-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .tool-chip:hover { border-color: var(--border2); color: var(--text); }
+
+  .tool-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    padding: 48px 8vw;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* ── FADE IN ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media(max-width: 600px) {
+    .projects-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    section { padding: 80px 6vw; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">~/wearable-signal-lab</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="https://github.com" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="tag">// physiological · signal · data science</div>
+  <h1>
+    Wearable<br>
+    <span class="accent">Signal</span><br>
+    <span class="accent2">Lab</span>
+  </h1>
+  <p class="hero-sub">
+    Exploratory analysis of physiological signals — from accelerometers
+    and ECG/PPG waveforms to sleep staging, audio processing, and
+    50 years of running shoe biomechanics.
+  </p>
+  <div class="hero-links">
+    <a href="#projects" class="btn btn-primary">Explore Projects →</a>
+    <a href="https://github.com" target="_blank" class="btn btn-ghost">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.74-1.33-1.74-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    scroll to explore
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div class="stats-bar fade-in">
+    <div class="stat">
+      <div class="stat-val" style="color:var(--blue)">4</div>
+      <div class="stat-label">Project modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--green)">22</div>
+      <div class="stat-label">Subjects (MMASH)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--purple)">50</div>
+      <div class="stat-label">Years of shoe data</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--orange)">8</div>
+      <div class="stat-label">Signal types</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">// 01 — modules</div>
+  <h2>Projects</h2>
+  <p class="section-desc">
+    Four interconnected modules, each exploring a different facet of
+    physiological or biomechanical data science.
+  </p>
+
+  <div class="projects-grid">
+
+    <!-- Card 1 -->
+    <div class="card fade-in" onclick="openModal('modal1')">
+      <img class="card-img" src="figures/01_behavior_distribution.png" alt="MMASH Exploration">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-blue">Wearable</span>
+          <span class="badge badge-green">EDA</span>
+          <span class="badge badge-purple">Sleep</span>
+        </div>
+        <div class="card-title">MMASH: Activity & Sleep Exploration</div>
+        <div class="card-desc">
+          Exploratory analysis of the Multilevel Monitoring of Activity and
+          Sleep in Healthy People dataset. Behavior distributions, RR interval
+          dynamics, and multi-day HRV patterns.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 01 · 02</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card fade-in" onclick="openModal('modal2')">
+      <img class="card-img" src="figures/02_model_comparison.png" alt="Activity Detection">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-green">ML</span>
+          <span class="badge badge-blue">Classification</span>
+          <span class="badge badge-orange">Clustering</span>
+        </div>
+        <div class="card-title">Activity Detection: Supervised vs Unsupervised</div>
+        <div class="card-desc">
+          Binary active/inactive classification comparing K-Means clustering
+          with Random Forest and SVM. Feature extraction from accelerometer
+          windows with leave-one-subject-out CV.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 02</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card fade-in" onclick="openModal('modal3')">
+      <img class="card-img" src="figures/03_ecg_ppg_processing.png" alt="ECG PPG">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-red">ECG</span>
+          <span class="badge badge-purple">PPG</span>
+          <span class="badge badge-blue">DSP</span>
+        </div>
+        <div class="card-title">ECG & PPG Signal Processing</div>
+        <div class="card-desc">
+          Bandpass filtering, spectral analysis via Welch PSD, R-peak
+          detection, and photoplethysmography peak extraction. Foundation for
+          heart rate and HRV computation from raw wearable signals.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 03</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="card fade-in" onclick="openModal('modal4')">
+      <img class="card-img" src="figures/04_sleep_hr_analysis.png" alt="Sleep">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-purple">Sleep</span>
+          <span class="badge badge-blue">HRV</span>
+          <span class="badge badge-green">Wearable</span>
+        </div>
+        <div class="card-title">Sleep Staging & Cardiac Dynamics</div>
+        <div class="card-desc">
+          Hypnogram reconstruction, overnight HR profiling by sleep stage,
+          and RMSSD-based HRV analysis. Investigating how sleep architecture
+          shapes cardiac autonomic regulation.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 04</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="card fade-in" onclick="openModal('modal5')">
+      <img class="card-img" src="figures/05_audio_processing.png" alt="Audio">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-orange">Audio</span>
+          <span class="badge badge-blue">DSP</span>
+          <span class="badge badge-green">Spectral</span>
+        </div>
+        <div class="card-title">Music & Audio Signal Processing</div>
+        <div class="card-desc">
+          FFT spectral analysis, STFT spectrogram, tempo estimation via
+          beat tracking, and chord decomposition. Bridges physiological
+          signal methods with music information retrieval.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 05</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="card fade-in" onclick="openModal('modal6')">
+      <img class="card-img" src="figures/06_running_shoes_performance.png" alt="Running">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-orange">Biomechanics</span>
+          <span class="badge badge-green">50 Years</span>
+        </div>
+        <div class="card-title">Running Shoe Drop vs Race Performance (1975–2024)</div>
+        <div class="card-desc">
+          Correlation analysis of heel-to-toe drop height and cushion
+          thickness against marathon, 10K, and 5K world records over 50
+          years. The super-shoe era quantified.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 06</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="section-label">// 02 — methodology</div>
+  <h2>Analysis Pipeline</h2>
+  <p class="section-desc">
+    A reproducible end-to-end workflow from raw sensor data to
+    insight, applicable across all project modules.
+  </p>
+  <div class="pipeline">
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">01</div>
+      <div class="pipe-content">
+        <h3>Data Ingestion & QC</h3>
+        <p>Load raw signals (CSV/EDF), inspect missing values, validate
+        timestamps, check sampling rates. Flag artifacts early.</p>
+      </div>
+    </div>
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">02</div>
+      <div class="pipe-content">
+        <h3>Signal Preprocessing</h3>
+        <p>Bandpass / notch filtering (Butterworth), baseline wander removal,
+        resampling, normalization. Visualize before/after PSD.</p>
+      </div>
+    </div>
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">03</div>
+      <div class="pipe-content">
+        <h3>Feature Extraction</h3>
+        <p>Window-based statistical features (mean, std, IQR, energy,
+        zero-crossings), spectral features (PSD bands), and
+        non-linear HRV measures (RMSSD, pNN50, SampEn).</p>
+      </div>
+    </div>
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">04</div>
+      <div class="pipe-content">
+        <h3>Unsupervised Exploration</h3>
+        <p>K-Means clustering, PCA visualization, Isolation Forest for
+        anomaly detection. Understand structure before adding labels.</p>
+      </div>
+    </div>
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">05</div>
+      <div class="pipe-content">
+        <h3>Supervised Classification</h3>
+        <p>Random Forest, SVM, and gradient boosting with
+        leave-one-subject-out cross-validation. F1, confusion matrices,
+        and feature importance.</p>
+      </div>
+    </div>
+    <div class="pipe-step fade-in">
+      <div class="pipe-num">06</div>
+      <div class="pipe-content">
+        <h3>Interpretation & Visualization</h3>
+        <p>Publication-quality figures, interactive dashboards, and
+        reproducible notebooks. All code open-source on GitHub.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="section-label">// 03 — stack</div>
+  <h2>Tools & Libraries</h2>
+  <p class="section-desc">Open-source Python stack built for reproducible biomedical signal processing.</p>
+  <div class="tools-grid fade-in">
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--blue)"></div>Python 3.11</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--blue)"></div>pandas</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--blue)"></div>NumPy</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--green)"></div>scikit-learn</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--green)"></div>SciPy (signal)</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--purple)"></div>Matplotlib</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--purple)"></div>Seaborn</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--orange)"></div>Jupyter</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--orange)"></div>MNE-Python</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--red)"></div>neurokit2</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--red)"></div>librosa</div>
+    <div class="tool-chip"><div class="tool-dot" style="background:var(--muted)"></div>GitHub Pages</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2024 · Wearable Signal Lab · MIT License</p>
+  <p>Dataset: <a href="https://physionet.org/content/mmash/1.0.0/" target="_blank" style="color:var(--blue);text-decoration:none">MMASH via PhysioNet ↗</a></p>
+</footer>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Modal 1 -->
+<div class="modal-overlay" id="modal1">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-blue">Wearable</span>
+          <span class="badge badge-green">EDA</span>
+          <span class="badge badge-purple">Sleep</span>
+        </div>
+        <div class="modal-title">MMASH: Activity & Sleep Exploration</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal1')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/01_behavior_distribution.png" alt="">
+      <img class="modal-img" src="figures/01_rr_hrv.png" alt="">
+      <p class="modal-desc">
+        The <strong>MMASH dataset</strong> (PhysioNet) contains multi-day recordings from 22 healthy
+        participants: triaxial accelerometry, RR intervals, sleep diaries, and activity labels.
+        This module performs a systematic EDA — behavior time distributions, overnight RR interval
+        dynamics, and windowed HRV (RMSSD) estimation to establish baseline physiological patterns.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>DATASET</h4><p>MMASH — 22 subjects, 2-day recordings</p></div>
+        <div class="method-item"><h4>SIGNALS</h4><p>RR intervals, accelerometer (Actigraph), sleep diary</p></div>
+        <div class="method-item"><h4>HRV METRIC</h4><p>RMSSD computed over sliding windows</p></div>
+        <div class="method-item"><h4>LABELS</h4><p>12 activity types (sleeping → vigorous activity)</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2 -->
+<div class="modal-overlay" id="modal2">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-green">ML</span>
+          <span class="badge badge-blue">Classification</span>
+        </div>
+        <div class="modal-title">Activity Detection: Supervised vs Unsupervised</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal2')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/02_kmeans_vs_groundtruth.png" alt="">
+      <img class="modal-img" src="figures/02_model_comparison.png" alt="">
+      <p class="modal-desc">
+        Binary activity classification (active vs. not active) comparing three paradigms.
+        K-Means (k=2) and Isolation Forest represent the unsupervised approach — no labels required.
+        Random Forest and SVM are trained with ground-truth activity annotations using
+        5-fold stratified cross-validation. <strong>Random Forest achieves F1 = 0.93</strong>,
+        while K-Means reaches ~0.56, highlighting the value of labeled data even for a simple binary task.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>FEATURES</h4><p>Activity code, duration, accelerometer stats</p></div>
+        <div class="method-item"><h4>UNSUPERVISED</h4><p>K-Means (k=2), Isolation Forest, PCA vis</p></div>
+        <div class="method-item"><h4>SUPERVISED</h4><p>Random Forest (100 trees), SVM (RBF kernel)</p></div>
+        <div class="method-item"><h4>EVALUATION</h4><p>F1 score, confusion matrix, feature importance</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3 -->
+<div class="modal-overlay" id="modal3">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-red">ECG</span>
+          <span class="badge badge-purple">PPG</span>
+          <span class="badge badge-blue">DSP</span>
+        </div>
+        <div class="modal-title">ECG & PPG Signal Processing</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal3')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/03_ecg_ppg_processing.png" alt="">
+      <p class="modal-desc">
+        Raw physiological signals from wearable sensors are corrupted by motion artifacts, 
+        baseline wander, and powerline interference. This notebook implements a full
+        preprocessing chain: 4th-order Butterworth bandpass filter (0.5–40 Hz), Welch PSD
+        estimation, and R-peak detection (Pan-Tompkins inspired). PPG peaks are detected for
+        heart rate derivation from optical sensors.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>FILTER</h4><p>4th-order Butterworth bandpass 0.5–40 Hz</p></div>
+        <div class="method-item"><h4>SPECTRUM</h4><p>Welch PSD (scipy.signal.welch)</p></div>
+        <div class="method-item"><h4>R-PEAKS</h4><p>scipy.signal.find_peaks + distance constraint</p></div>
+        <div class="method-item"><h4>PPG</h4><p>Peak detection → instantaneous HR</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4 -->
+<div class="modal-overlay" id="modal4">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-purple">Sleep</span>
+          <span class="badge badge-blue">HRV</span>
+        </div>
+        <div class="modal-title">Sleep Staging & Cardiac Dynamics</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal4')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/04_sleep_hr_analysis.png" alt="">
+      <p class="modal-desc">
+        Sleep architecture profoundly shapes cardiac autonomic activity. This module
+        reconstructs hypnograms from wearable data, plots overnight HR trajectories,
+        and computes HR distributions per sleep stage (Wake, N1, N2, N3/Deep, REM).
+        Deep sleep (N3) is associated with the lowest heart rates and highest vagal tone.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>HYPNOGRAM</h4><p>5-stage sleep staging (W/N1/N2/N3/REM)</p></div>
+        <div class="method-item"><h4>HR PROFILE</h4><p>Rolling mean overnight HR curve</p></div>
+        <div class="method-item"><h4>RMSSD</h4><p>Windowed RMSSD as vagal tone proxy</p></div>
+        <div class="method-item"><h4>STAGE HR</h4><p>Boxplot distribution per sleep stage</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5 -->
+<div class="modal-overlay" id="modal5">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-orange">Audio</span>
+          <span class="badge badge-blue">DSP</span>
+        </div>
+        <div class="modal-title">Music & Audio Signal Processing</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal5')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/05_audio_processing.png" alt="">
+      <p class="modal-desc">
+        The same DSP toolkit used for physiological signals applies directly to audio.
+        This module analyzes musical signals: FFT frequency decomposition, STFT spectrogram,
+        tempo estimation via onset strength, and chord note identification. Bridges
+        biomedical signal processing with music information retrieval (MIR).
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>WAVEFORM</h4><p>Time-domain chord signal (Am: 220/261/330 Hz)</p></div>
+        <div class="method-item"><h4>FFT</h4><p>Frequency decomposition, harmonic identification</p></div>
+        <div class="method-item"><h4>STFT</h4><p>Spectrogram via scipy.signal.spectrogram</p></div>
+        <div class="method-item"><h4>TEMPO</h4><p>Beat tracking, BPM estimation</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6 -->
+<div class="modal-overlay" id="modal6">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-orange">Biomechanics</span>
+          <span class="badge badge-green">50 Years</span>
+        </div>
+        <div class="modal-title">Running Shoe Drop vs Race Performance (1975–2024)</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal6')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/06_running_shoes_performance.png" alt="">
+      <p class="modal-desc">
+        50 years of running shoe design data (heel-to-toe drop, midsole cushion thickness)
+        correlated against world records in the marathon, half marathon, 10K, 5K, 1500m,
+        and 400m. The analysis captures three eras: the maximalist 1970s/80s, the minimalist
+        wave triggered by <em>Born to Run</em> (2009), and the carbon-plate super-shoe revolution
+        (Vaporfly, 2016+) — which is strongly correlated with the most dramatic WR improvements
+        in road running history.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>SHOE DATA</h4><p>Drop height (mm), cushion thickness, carbon plate era flags</p></div>
+        <div class="method-item"><h4>RECORDS</h4><p>Marathon, HM, 10K, 5K, 1500m, 400m WR progression</p></div>
+        <div class="method-item"><h4>ANALYSIS</h4><p>Pearson correlation matrix, scatter trend lines</p></div>
+        <div class="method-item"><h4>ERA FLAGS</h4><p>Born to Run (2009), Vaporfly launch (2016)</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Fade in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Modals
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el) closeModal(el.id);
+    });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(el => closeModal(el.id));
+    }
+  });
+</script>
+</body>
+</html>
