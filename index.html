@@ -626,7 +626,7 @@
 <section>
   <div class="stats-bar fade-in">
     <div class="stat">
-      <div class="stat-val" style="color:var(--blue)">4</div>
+      <div class="stat-val" style="color:var(--blue)">7</div>
       <div class="stat-label">Project modules</div>
     </div>
     <div class="stat">
@@ -782,6 +782,28 @@
         </div>
         <div class="card-footer">
           <span>Notebook 06</span>
+          <a href="#">View details →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="card fade-in" onclick="openModal('modal7')">
+      <img class="card-img" src="figures/07_bpm_by_zone.png" alt="Music x Running">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-orange">Audio</span>
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-green">Cadence</span>
+        </div>
+        <div class="card-title">Music BPM × Running Pace: Finding Your Perfect Tempo</div>
+        <div class="card-desc">
+          Correlating music tempo (BPM) with running cadence and pace targets.
+          Genre BPM distributions mapped to pace zones, cadence entrainment
+          simulation, and a personalised playlist BPM recommender.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 07</span>
           <a href="#">View details →</a>
         </div>
       </div>
@@ -1071,6 +1093,41 @@
         <div class="method-item"><h4>RECORDS</h4><p>Marathon, HM, 10K, 5K, 1500m, 400m WR progression</p></div>
         <div class="method-item"><h4>ANALYSIS</h4><p>Pearson correlation matrix, scatter trend lines</p></div>
         <div class="method-item"><h4>ERA FLAGS</h4><p>Born to Run (2009), Vaporfly launch (2016)</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 7 -->
+<div class="modal-overlay" id="modal7">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-orange">Audio</span>
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-green">Cadence</span>
+        </div>
+        <div class="modal-title">Music BPM × Running Pace: Finding Your Perfect Tempo</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal7')">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-img" src="figures/07_pace_bpm_model.png" alt="">
+      <img class="modal-img" src="figures/07_genre_bpm_zones.png" alt="">
+      <img class="modal-img" src="figures/07_bpm_by_zone.png" alt="">
+      <p class="modal-desc">
+        Music tempo acts as an <strong>external pacemaker</strong> — runners unconsciously synchronise
+        their stride to the beat. This module models the full pace → cadence → BPM relationship,
+        maps genre BPM distributions to running pace zones, simulates cadence entrainment under
+        different music conditions, and provides a <code>recommend_bpm()</code> function that
+        outputs the ideal music BPM range for any target pace.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>MODEL</h4><p>Pace → cadence → BPM via stride length estimation</p></div>
+        <div class="method-item"><h4>GENRES</h4><p>10 genres mapped by BPM distribution to pace zones</p></div>
+        <div class="method-item"><h4>ENTRAINMENT</h4><p>Cadence synchronisation simulation (coupling model)</p></div>
+        <div class="method-item"><h4>RECOMMENDER</h4><p>recommend_bpm(pace) → ideal BPM + genre matches</p></div>
       </div>
     </div>
   </div>
