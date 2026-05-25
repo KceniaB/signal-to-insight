@@ -873,25 +873,9 @@ function calculateSimpleWorkout(isTrack, isTreadmill, startTime) {
     let lapCumTime = 0;
     const num400s = Math.ceil(finalDistance / 0.4);
     
-    // Build 400m-level paces
-    let paces400m = [];
-    if (paceStr.includes('>')) {
-      // Pace range - distribute across 400m intervals
-      const [startPace, endPace] = paceStr.split('>').map(p => parseTime(p.trim()));
-      for (let i = 0; i < num400s; i++) {
-        const progress = num400s > 1 ? i / (num400s - 1) : 0;
-        const pace = startPace + (endPace - startPace) * progress;
-        paces400m.push(pace);
-      }
-    } else {
-      // Fixed pace - use the average pace per km
-      const avgPacePerKm = totalSeconds / finalDistance;
-      paces400m = Array(num400s).fill(avgPacePerKm);
-    }
-    
     for (let i = 0; i < num400s; i++) {
       const lapDist = Math.min(0.4, finalDistance - (i * 0.4));
-      const lapPace = paces400m[i];
+      const lapPace = paces[Math.min(i, paces.length - 1)];
       const lapTime = lapPace * lapDist;
       lapCumTime += lapTime;
       
