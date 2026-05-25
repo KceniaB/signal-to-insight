@@ -861,33 +861,6 @@ function calculateSimpleWorkout(isTrack, isTreadmill, startTime) {
   result += `\n───────────────────────────────────────────────────────\n`;
   result += `✓ Estimated Finish: ${formatClockTime(endTime)}\n`;
   
-  // Add 400m lap splits for track workouts
-  if (isTrack) {
-    result += `\n\n═══════════════════════════════════════════════════════\n`;
-    result += `🏟️  400m LAP SPLITS\n`;
-    result += `═══════════════════════════════════════════════════════\n\n`;
-    
-    result += `Lap#   Split Time   Clock Time      Cumulative\n`;
-    result += `─────────────────────────────────────────────────────\n`;
-    
-    let lapCumTime = 0;
-    const num400s = Math.ceil(finalDistance / 0.4);
-    
-    for (let i = 0; i < num400s; i++) {
-      const lapDist = Math.min(0.4, finalDistance - (i * 0.4));
-      const lapPace = paces[Math.min(i, paces.length - 1)];
-      const lapTime = lapPace * lapDist;
-      lapCumTime += lapTime;
-      
-      const lapNum = String(i + 1).padStart(4);
-      const split = formatTime(lapTime).padEnd(12);
-      const clock = formatClockTime(startSeconds + lapCumTime).padEnd(15);
-      const cum = formatClockTime(lapCumTime);
-      
-      result += `${lapNum}   ${split} ${clock} ${cum}\n`;
-    }
-  }
-  
   return result;
 }
 
@@ -1153,17 +1126,15 @@ function calculateComplexWorkout(isTrack, isTreadmill, startTime) {
       result += `  Pace: ${formatTime(workPaces[0])} /km\n`;
     }
     result += `  Time per rep: ${formatClockTime(calculatedWorkTime)}\n`;
-    result += `  Total work time: ${formatClockTime(calculatedWorkTime * repeats)}\n`;
     
     if (calculatedRecDist > 0 && recPaces.length > 0) {
-      result += `\nRECOVERY: ${calculatedRecDist.toFixed(3)} km × ${repeats - 1}\n`;
+      result += `RECOVERY: ${calculatedRecDist.toFixed(3)} km × ${repeats - 1}\n`;
       if (hasRecPaceRange) {
         result += `  Pace progression: ${recPaceRange} /km\n`;
       } else {
         result += `  Pace: ${formatTime(recPaces[0])} /km\n`;
       }
       result += `  Time per recovery: ${formatClockTime(calculatedRecTime)}\n`;
-      result += `  Total recovery time: ${formatClockTime(calculatedRecTime * (repeats - 1))}\n`;
     }
     
     result += `\n`;
@@ -1171,47 +1142,18 @@ function calculateComplexWorkout(isTrack, isTreadmill, startTime) {
     // Add to splits
     for (let rep = 0; rep < repeats; rep++) {
       const workSegTime = workPaces[rep] * calculatedWorkDist;
+      cumTime += workSegTime;
       
-      // If work is >= 1km, add km splits with proper pace progression
+      // If work is >= 1km, add km splits
       if (calculatedWorkDist >= 1) {
-        const numKms = Math.floor(calculatedWorkDist);
-        
-        // For pace ranges, distribute pace across the KMs within this rep
-        if (hasWorkPaceRange) {
-          const [startPace, endPace] = workPaceRange.split('>').map(p => parseTime(p.trim()));
-          for (let k = 0; k < numKms; k++) {
-            const progress = numKms > 1 ? k / (numKms - 1) : 0;
-            const kmPace = startPace + (endPace - startPace) * progress;
-            cumTime += kmPace;
-            allKmSplits.push({
-              km: Math.floor(totalDistance) + k + 1,
-              section: `Seg${idx + 1} Work Rep${rep + 1}`,
-              time: cumTime,
-              pace: kmPace
-            });
-          }
-        } else {
-          // Fixed pace for each km
-          for (let k = 0; k < numKms; k++) {
-            cumTime += workPaces[rep];
-            allKmSplits.push({
-              km: Math.floor(totalDistance) + k + 1,
-              section: `Seg${idx + 1} Work Rep${rep + 1}`,
-              time: cumTime,
-              pace: workPaces[rep]
-            });
-          }
+        for (let k = 0; k < Math.floor(calculatedWorkDist); k++) {
+          allKmSplits.push({
+            km: Math.floor(totalDistance) + k + 1,
+            section: `Seg${idx + 1} Work Rep${rep + 1}`,
+            time: cumTime - workSegTime + (k + 1) * workPaces[rep],
+            pace: workPaces[rep]
+          });
         }
-        
-        // Handle partial km if exists
-        const partialKm = calculatedWorkDist - numKms;
-        if (partialKm > 0) {
-          const partialTime = workPaces[rep] * partialKm;
-          cumTime += partialTime;
-        }
-      } else {
-        // Work segment < 1km, just add time
-        cumTime += workSegTime;
       }
       
       totalDistance += calculatedWorkDist;
@@ -1219,48 +1161,20 @@ function calculateComplexWorkout(isTrack, isTreadmill, startTime) {
       
       if (calculatedRecDist > 0 && rep < repeats - 1 && recPaces[rep]) {
         const recSegTime = recPaces[rep] * calculatedRecDist;
-        
-        if (calculatedRecDist >= 1) {
-          const numKms = Math.floor(calculatedRecDist);
-          
-          // For pace ranges, distribute pace across the KMs within this recovery
-          if (hasRecPaceRange) {
-            const [startPace, endPace] = recPaceRange.split('>').map(p => parseTime(p.trim()));
-            for (let k = 0; k < numKms; k++) {
-              const progress = numKms > 1 ? k / (numKms - 1) : 0;
-              const kmPace = startPace + (endPace - startPace) * progress;
-              cumTime += kmPace;
-              allKmSplits.push({
-                km: Math.floor(totalDistance) + k + 1,
-                section: `Seg${idx + 1} Rec`,
-                time: cumTime,
-                pace: kmPace
-              });
-            }
-          } else {
-            // Fixed pace for each km
-            for (let k = 0; k < numKms; k++) {
-              cumTime += recPaces[rep];
-              allKmSplits.push({
-                km: Math.floor(totalDistance) + k + 1,
-                section: `Seg${idx + 1} Rec`,
-                time: cumTime,
-                pace: recPaces[rep]
-              });
-            }
-          }
-          
-          // Handle partial km
-          const partialKm = calculatedRecDist - numKms;
-          if (partialKm > 0) {
-            cumTime += recPaces[rep] * partialKm;
-          }
-        } else {
-          cumTime += recSegTime;
-        }
-        
+        cumTime += recSegTime;
         totalDistance += calculatedRecDist;
         totalTime += recSegTime;
+        
+        if (calculatedRecDist >= 1) {
+          for (let k = 0; k < Math.floor(calculatedRecDist); k++) {
+            allKmSplits.push({
+              km: Math.floor(totalDistance - calculatedRecDist) + k + 1,
+              section: `Seg${idx + 1} Rec`,
+              time: cumTime - recSegTime + (k + 1) * recPaces[rep],
+              pace: recPaces[rep]
+            });
+          }
+        }
       }
     }
   });
