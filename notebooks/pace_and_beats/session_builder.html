@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Builder · Cadence × Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0d1117;
+  --surf:    #161b22;
+  --surf2:   #1c2128;
+  --border:  #21262d;
+  --border2: #30363d;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+  --blue:    #58a6ff;
+  --green:   #3fb950;
+  --red:     #f78166;
+  --purple:  #d2a8ff;
+  --orange:  #ffa657;
+  --yellow:  #e3b341;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  padding: 32px 20px 60px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 40px; }
+.badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;
+}
+h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.15; margin-bottom: 8px;
+}
+.sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em;
+}
+
+/* ── Layout ── */
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+/* ── Cards ── */
+.card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px;
+}
+.card-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+}
+
+/* ── Session name ── */
+.session-name-row { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+.session-name-row input {
+  flex: 1; background: var(--surf2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  padding: 10px 14px; outline: none; transition: border-color 0.15s;
+}
+.session-name-row input:focus { border-color: var(--blue); }
+
+/* ── Segment cards ── */
+.segments-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+
+.seg-card {
+  background: var(--surf2); border: 1px solid var(--border2);
+  border-radius: 10px; overflow: hidden;
+  transition: border-color 0.2s;
+}
+.seg-card[data-type="progressive"] { border-left: 3px solid var(--green); }
+.seg-card[data-type="steady"]      { border-left: 3px solid var(--blue); }
+.seg-card[data-type="interval"]    { border-left: 3px solid var(--red); }
+.seg-card[data-type="tempo"]       { border-left: 3px solid var(--orange); }
+.seg-card[data-type="cooldown"]    { border-left: 3px solid var(--muted); }
+
+.seg-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+}
+.seg-header:hover { background: rgba(255,255,255,0.03); }
+
+.seg-type-badge {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; border-radius: 4px;
+  padding: 2px 7px; flex-shrink: 0;
+}
+.seg-name-display { flex: 1; font-size: 0.9rem; font-weight: 600; }
+.seg-summary {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+  color: var(--muted); flex-shrink: 0;
+}
+.seg-bpm-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+  font-weight: 600; color: var(--purple); flex-shrink: 0;
+  min-width: 60px; text-align: right;
+}
+.seg-chevron {
+  font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; flex-shrink: 0;
+}
+.seg-card.open .seg-chevron { transform: rotate(180deg); }
+
+.seg-body { display: none; padding: 0 14px 14px; }
+.seg-card.open .seg-body { display: block; }
+
+/* ── Form fields inside segment ── */
+.seg-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 4px; }
+.seg-fields.wide { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+
+.field label {
+  display: block; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 4px;
+}
+.field input, .field select {
+  width: 100%; background: var(--surf);
+  border: 1px solid var(--border2); border-radius: 6px;
+  color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem; padding: 7px 10px; outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus { border-color: var(--blue); }
+.field select option { background: var(--surf2); }
+
+.interval-extra { display: none; }
+.interval-extra.show { display: contents; }
+.progressive-extra { display: none; }
+.progressive-extra.show { display: contents; }
+
+.seg-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn-del {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--red); font-size: 0.75rem;
+  padding: 5px 12px; cursor: pointer; font-family: 'Syne', sans-serif;
+  transition: background 0.15s;
+}
+.btn-del:hover { background: rgba(247,129,102,0.1); }
+.btn-dup {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--muted); font-size: 0.75rem;
+  padding: 5px 12px; cursor: pointer; font-family: 'Syne', sans-serif;
+  transition: background 0.15s;
+}
+.btn-dup:hover { background: rgba(255,255,255,0.05); }
+
+/* ── Add segment buttons ── */
+.add-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.btn-add {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 20px; color: var(--muted);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+  padding: 6px 14px; cursor: pointer; letter-spacing: 0.04em;
+  transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+}
+.btn-add:hover { border-color: var(--blue); color: var(--blue); }
+.btn-add .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Analyse button ── */
+.btn-analyse {
+  width: 100%; background: linear-gradient(135deg, #1f6feb, #8957e5);
+  border: none; border-radius: 8px; color: #fff;
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  padding: 14px; cursor: pointer; letter-spacing: 0.04em;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-analyse:hover { opacity: 0.9; }
+.btn-analyse:active { transform: scale(0.99); }
+
+/* ── Right panel: live preview ── */
+.preview-panel { position: sticky; top: 20px; }
+
+.total-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
+}
+.stat-box {
+  background: var(--surf2); border-radius: 8px;
+  padding: 12px; text-align: center;
+}
+.stat-val {
+  font-family: 'JetBrains Mono', monospace; font-size: 1.4rem;
+  font-weight: 600; line-height: 1; margin-bottom: 4px;
+}
+.stat-lbl { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* ── Mini session timeline ── */
+.timeline { width: 100%; height: 56px; border-radius: 8px; overflow: hidden; display: flex; margin-bottom: 14px; }
+.tl-seg { height: 100%; display: flex; align-items: center; justify-content: center; transition: flex 0.3s ease; overflow: hidden; min-width: 0; }
+.tl-seg span { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+
+/* ── BPM prescription list ── */
+.prescription { display: flex; flex-direction: column; gap: 8px; }
+.rx-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; background: var(--surf2); border-radius: 8px;
+}
+.rx-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.rx-name { flex: 1; font-size: 0.8rem; font-weight: 600; }
+.rx-pace { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+.rx-bpm { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 600; color: var(--purple); min-width: 52px; text-align: right; }
+.rx-genre { font-size: 0.62rem; color: var(--muted); text-align: right; min-width: 90px; line-height: 1.3; }
+
+/* ── Export ── */
+.export-row { display: flex; gap: 8px; margin-top: 14px; }
+.btn-export {
+  flex: 1; background: var(--surf2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; padding: 9px 12px; cursor: pointer;
+  transition: border-color 0.15s; letter-spacing: 0.04em;
+}
+.btn-export:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── Drag handle ── */
+.drag-handle { cursor: grab; color: var(--border2); font-size: 1rem; padding: 0 4px; flex-shrink: 0; }
+.drag-handle:active { cursor: grabbing; }
+.seg-card.dragging { opacity: 0.4; }
+.seg-card.drag-over { border-top: 2px solid var(--blue); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">Signal to Insight · Portfolio Tool</div>
+    <h1>Session Builder</h1>
+    <p class="sub">Build any training session → get science-backed music BPM per zone</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT: Builder -->
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Session details</div>
+        <div class="session-name-row">
+          <input type="text" id="session-name" placeholder="Session name e.g. Track Tuesday — 16×400m" value="Track Tuesday — 16×400m">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Segments <span style="color:var(--muted);font-weight:400;letter-spacing:0;">— drag to reorder</span></div>
+        <div class="segments-list" id="segments-list"></div>
+        <div class="add-row" id="add-row">
+          <button class="btn-add" onclick="addSegment('progressive')"><span class="dot" style="background:var(--green)"></span>Warmup / progressive</button>
+          <button class="btn-add" onclick="addSegment('steady')"><span class="dot" style="background:var(--blue)"></span>Steady run</button>
+          <button class="btn-add" onclick="addSegment('interval')"><span class="dot" style="background:var(--red)"></span>Intervals</button>
+          <button class="btn-add" onclick="addSegment('tempo')"><span class="dot" style="background:var(--orange)"></span>Tempo</button>
+          <button class="btn-add" onclick="addSegment('cooldown')"><span class="dot" style="background:var(--muted)"></span>Cooldown</button>
+        </div>
+        <button class="btn-analyse" onclick="analyse()">Generate BPM prescription →</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Live preview -->
+    <div class="preview-panel">
+      <div class="card">
+        <div class="card-title">Live preview</div>
+        <div class="total-stats">
+          <div class="stat-box">
+            <div class="stat-val" id="total-km" style="color:var(--blue);">—</div>
+            <div class="stat-lbl">Total km</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="total-segs" style="color:var(--green);">—</div>
+            <div class="stat-lbl">Segments</div>
+          </div>
+        </div>
+        <div class="timeline" id="timeline"></div>
+        <div class="card-title" style="margin-top:4px;">BPM prescription</div>
+        <div class="prescription" id="prescription"></div>
+        <div class="export-row">
+          <button class="btn-export" onclick="copyPython()">Copy Python SESSION dict</button>
+          <button class="btn-export" onclick="exportJSON()">Export JSON</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let segments = [];
+let segId = 0;
+
+const TYPE_META = {
+  progressive: { label: 'Warmup',    color: '#3fb950', bgAlpha: '22' },
+  steady:      { label: 'Steady',    color: '#58a6ff', bgAlpha: '22' },
+  interval:    { label: 'Interval',  color: '#f78166', bgAlpha: '22' },
+  tempo:       { label: 'Tempo',     color: '#ffa657', bgAlpha: '22' },
+  cooldown:    { label: 'Cooldown',  color: '#8b949e', bgAlpha: '22' },
+};
+
+const GENRES = [
+  { genre: 'Acoustic / folk',    lo: 60,  hi: 90  },
+  { genre: 'Hip-hop / trap',     lo: 80,  hi: 100 },
+  { genre: 'R&B / neo-soul',     lo: 90,  hi: 115 },
+  { genre: 'Indie / alt',        lo: 110, hi: 130 },
+  { genre: 'Pop / dance-pop',    lo: 115, hi: 135 },
+  { genre: 'EDM / house',        lo: 120, hi: 138 },
+  { genre: 'Electro / techno',   lo: 130, hi: 150 },
+  { genre: 'Drum & bass',        lo: 155, hi: 180 },
+  { genre: 'Punk / metal',       lo: 160, hi: 200 },
+];
+
+// ── Biomechanics ──────────────────────────────────────────────────────────────
+function paceToSpeed(paceStr) {
+  const parts = paceStr.split(':');
+  if (parts.length !== 2) return null;
+  const secPerKm = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  return secPerKm > 0 ? 1000 / secPerKm : null;
+}
+
+function speedToSPM(v) {
+  if (!v || v <= 0) return 0;
+  const sl = 2 * 0.413 * Math.pow(v, 0.434);
+  return Math.round((v / sl) * 60 * 2);
+}
+
+function paceToBPM(paceStr) {
+  const v = paceToSpeed(paceStr);
+  if (!v) return { bpm: null, spm: null, kmh: null };
+  const spm = speedToSPM(v);
+  return { bpm: spm, spm, kmh: Math.round(v * 3.6 * 10) / 10 };
+}
+
+function matchGenres(bpm, n=2) {
+  return GENRES.filter(g => bpm >= g.lo - 5 && bpm <= g.hi + 5)
+               .slice(0, n).map(g => g.genre);
+}
+
+// ── Default segment templates ─────────────────────────────────────────────────
+const DEFAULTS = {
+  progressive: { name: 'Warmup', dist: 4,    pace: '5:15', paceEnd: '4:30', reps: null, repDist: null, recPace: null, recDur: null },
+  steady:      { name: 'Easy run', dist: 8,  pace: '5:30', paceEnd: null,   reps: null, repDist: null, recPace: null, recDur: null },
+  interval:    { name: '16×400m', dist: null, pace: '3:30', paceEnd: null,  reps: 16,   repDist: 400,  recPace: '5:10', recDur: 60 },
+  tempo:       { name: 'Tempo run', dist: 6, pace: '4:15', paceEnd: null,   reps: null, repDist: null, recPace: null, recDur: null },
+  cooldown:    { name: 'Cooldown', dist: 2,  pace: '5:30', paceEnd: null,   reps: null, repDist: null, recPace: null, recDur: null },
+};
+
+// ── Segment computation ───────────────────────────────────────────────────────
+function computeSegment(seg) {
+  const type = seg.type;
+  const meta = TYPE_META[type];
+
+  if (type === 'interval') {
+    const reps = parseInt(seg.reps) || 1;
+    const repDistKm = (parseInt(seg.repDist) || 400) / 1000;
+    const effortKm = reps * repDistKm;
+    const { bpm, spm } = paceToBPM(seg.pace);
+    const { bpm: recBpm, kmh: recKmh } = paceToBPM(seg.recPace || '5:00');
+    const recKm = ((parseInt(seg.recDur) || 60) / 3600) * (recKmh || 10);
+    const totalKm = effortKm + reps * recKm;
+    return {
+      ...seg, meta, bpm, spm, effortKm, totalKm: Math.round(totalKm * 100) / 100,
+      recBpm, summary: `${reps}×${seg.repDist}m @ ${seg.pace}`,
+      genres: bpm ? matchGenres(bpm) : []
+    };
+  } else if (type === 'progressive') {
+    const vStart = paceToSpeed(seg.pace);
+    const vEnd = paceToSpeed(seg.paceEnd || seg.pace);
+    const vMid = vStart && vEnd ? (vStart + vEnd) / 2 : vStart;
+    const spm = speedToSPM(vMid);
+    const bpm = spm;
+    const dist = parseFloat(seg.dist) || 0;
+    return {
+      ...seg, meta, bpm, spm, totalKm: dist,
+      summary: `${seg.dist}km ${seg.pace}→${seg.paceEnd}`,
+      genres: bpm ? matchGenres(bpm) : []
+    };
+  } else {
+    const { bpm, spm } = paceToBPM(seg.pace);
+    const dist = parseFloat(seg.dist) || 0;
+    return {
+      ...seg, meta, bpm, spm, totalKm: dist,
+      summary: `${seg.dist}km @ ${seg.pace}`,
+      genres: bpm ? matchGenres(bpm) : []
+    };
+  }
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const list = document.getElementById('segments-list');
+  list.innerHTML = '';
+
+  segments.forEach((seg, idx) => {
+    const computed = computeSegment(seg);
+    const meta = TYPE_META[seg.type];
+    const isInterval = seg.type === 'interval';
+    const isProgressve = seg.type === 'progressive';
+
+    const card = document.createElement('div');
+    card.className = 'seg-card';
+    card.dataset.type = seg.type;
+    card.dataset.idx = idx;
+    card.draggable = true;
+
+    const bpmDisplay = computed.bpm ? `${computed.bpm} BPM` : '—';
+
+    card.innerHTML = `
+      <div class="seg-header" onclick="toggleCard(${idx})">
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
+        <span class="seg-type-badge" style="background:${meta.color}${meta.bgAlpha};color:${meta.color};">${meta.label}</span>
+        <span class="seg-name-display">${seg.name}</span>
+        <span class="seg-summary">${computed.summary}</span>
+        <span class="seg-bpm-badge">${bpmDisplay}</span>
+        <span class="seg-chevron">▾</span>
+      </div>
+      <div class="seg-body">
+        <div class="seg-fields">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" value="${seg.name}" oninput="updateSeg(${idx},'name',this.value)">
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select onchange="updateSeg(${idx},'type',this.value)">
+              <option value="progressive" ${seg.type==='progressive'?'selected':''}>Warmup / progressive</option>
+              <option value="steady"      ${seg.type==='steady'?'selected':''}>Steady run</option>
+              <option value="interval"    ${seg.type==='interval'?'selected':''}>Intervals</option>
+              <option value="tempo"       ${seg.type==='tempo'?'selected':''}>Tempo</option>
+              <option value="cooldown"    ${seg.type==='cooldown'?'selected':''}>Cooldown</option>
+            </select>
+          </div>
+          ${!isInterval ? `
+          <div class="field">
+            <label>Distance (km)</label>
+            <input type="number" min="0.1" step="0.1" value="${seg.dist}" oninput="updateSeg(${idx},'dist',this.value)">
+          </div>` : ''}
+          <div class="field">
+            <label>${isInterval ? 'Effort pace /km' : 'Pace /km'}</label>
+            <input type="text" placeholder="M:SS" value="${seg.pace}" oninput="updateSeg(${idx},'pace',this.value)">
+          </div>
+          <div class="progressive-extra ${isProgressve ? 'show' : ''}">
+            <div class="field">
+              <label>End pace /km</label>
+              <input type="text" placeholder="M:SS" value="${seg.paceEnd||''}" oninput="updateSeg(${idx},'paceEnd',this.value)">
+            </div>
+          </div>
+          <div class="interval-extra ${isInterval ? 'show' : ''}">
+            <div class="field">
+              <label>Repetitions</label>
+              <input type="number" min="1" value="${seg.reps||''}" oninput="updateSeg(${idx},'reps',this.value)">
+            </div>
+            <div class="field">
+              <label>Rep distance (m)</label>
+              <input type="number" min="50" step="50" value="${seg.repDist||''}" oninput="updateSeg(${idx},'repDist',this.value)">
+            </div>
+            <div class="field">
+              <label>Recovery pace /km</label>
+              <input type="text" placeholder="M:SS" value="${seg.recPace||''}" oninput="updateSeg(${idx},'recPace',this.value)">
+            </div>
+            <div class="field">
+              <label>Recovery time (s)</label>
+              <input type="number" min="0" step="10" value="${seg.recDur||''}" oninput="updateSeg(${idx},'recDur',this.value)">
+            </div>
+          </div>
+        </div>
+        ${computed.bpm ? `
+        <div style="margin-top:12px; padding:10px 12px; background:var(--surf); border-radius:6px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted);">cadence <strong style="color:var(--text);">${computed.spm} spm</strong></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted);">target BPM <strong style="color:var(--purple);">${computed.bpm} ±5</strong></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted);">genre <strong style="color:var(--text);">${computed.genres.join(', ') || '—'}</strong></div>
+        </div>` : ''}
+        <div class="seg-actions">
+          <button class="btn-del" onclick="deleteSeg(${idx})">✕ Remove</button>
+          <button class="btn-dup" onclick="dupSeg(${idx})">⧉ Duplicate</button>
+        </div>
+      </div>
+    `;
+
+    // Re-open if was open
+    if (seg._open) card.classList.add('open');
+
+    list.appendChild(card);
+  });
+
+  updatePreview();
+  setupDragDrop();
+}
+
+function toggleCard(idx) {
+  segments[idx]._open = !segments[idx]._open;
+  render();
+}
+
+function updateSeg(idx, key, value) {
+  segments[idx][key] = value;
+  if (key === 'type') {
+    // Apply defaults for new type but keep name
+    const name = segments[idx].name;
+    segments[idx] = { ...DEFAULTS[value], type: value, id: segments[idx].id, _open: true, name };
+  }
+  render();
+}
+
+function deleteSeg(idx) {
+  segments.splice(idx, 1);
+  render();
+}
+
+function dupSeg(idx) {
+  const copy = { ...segments[idx], id: ++segId, _open: false };
+  segments.splice(idx + 1, 0, copy);
+  render();
+}
+
+function addSegment(type) {
+  const seg = { ...DEFAULTS[type], type, id: ++segId, _open: true };
+  segments.push(seg);
+  render();
+  // Scroll to new segment
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.seg-card');
+    if (cards.length) cards[cards.length-1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 50);
+}
+
+// ── Preview panel ─────────────────────────────────────────────────────────────
+function updatePreview() {
+  const computed = segments.map(computeSegment);
+  const totalKm = computed.reduce((s, c) => s + (c.totalKm || 0), 0);
+
+  document.getElementById('total-km').textContent = totalKm > 0 ? totalKm.toFixed(1) : '—';
+  document.getElementById('total-segs').textContent = segments.length || '—';
+
+  // Timeline
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  if (segments.length) {
+    computed.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'tl-seg';
+      div.style.flex = Math.max(c.totalKm || 1, 0.5);
+      div.style.background = c.meta.color + '33';
+      div.style.borderLeft = `2px solid ${c.meta.color}`;
+      div.innerHTML = `<span style="color:${c.meta.color};">${c.name}</span>`;
+      tl.appendChild(div);
+    });
+  } else {
+    tl.style.background = 'var(--surf2)';
+  }
+
+  // Prescription
+  const rx = document.getElementById('prescription');
+  rx.innerHTML = '';
+  if (!computed.length) {
+    rx.innerHTML = '<p style="font-size:0.78rem;color:var(--muted);text-align:center;padding:16px 0;">Add segments to see BPM targets</p>';
+    return;
+  }
+  computed.forEach(c => {
+    if (!c.bpm) return;
+    const row = document.createElement('div');
+    row.className = 'rx-row';
+    const paceDisp = c.paceEnd ? `${c.pace}→${c.paceEnd}` : c.pace;
+    row.innerHTML = `
+      <div class="rx-dot" style="background:${c.meta.color};"></div>
+      <div class="rx-name">${c.name}</div>
+      <div class="rx-pace">${paceDisp}/km</div>
+      <div class="rx-genre">${c.genres.slice(0,2).join('<br>')}</div>
+      <div class="rx-bpm">${c.bpm} BPM</div>
+    `;
+    rx.appendChild(row);
+  });
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+function copyPython() {
+  const name = document.getElementById('session-name').value;
+  let py = `SESSION_NAME = "${name}"\n\nSESSION = [\n`;
+  segments.forEach(seg => {
+    py += `    {\n`;
+    py += `        'name':                '${seg.name}',\n`;
+    py += `        'type':                '${seg.type}',\n`;
+    py += `        'distance_km':         ${seg.dist || 'None'},\n`;
+    py += `        'pace':                '${seg.pace}',\n`;
+    py += `        'pace_end':            ${seg.paceEnd ? `'${seg.paceEnd}'` : 'None'},\n`;
+    py += `        'reps':                ${seg.reps || 'None'},\n`;
+    py += `        'rep_distance_m':      ${seg.repDist || 'None'},\n`;
+    py += `        'recovery_pace':       ${seg.recPace ? `'${seg.recPace}'` : 'None'},\n`;
+    py += `        'recovery_duration_s': ${seg.recDur || 'None'},\n`;
+    py += `    },\n`;
+  });
+  py += `]\n`;
+  navigator.clipboard.writeText(py).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  });
+}
+
+function exportJSON() {
+  const name = document.getElementById('session-name').value;
+  const data = { session_name: name, segments };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name.toLowerCase().replace(/\s+/g, '_') + '.json';
+  a.click();
+}
+
+function analyse() {
+  const btn = document.querySelector('.btn-analyse');
+  btn.textContent = '✓ Prescription ready — see right panel';
+  btn.style.background = 'linear-gradient(135deg, #1a7f37, #2ea043)';
+  setTimeout(() => {
+    btn.textContent = 'Generate BPM prescription →';
+    btn.style.background = '';
+  }, 2500);
+  document.querySelector('.preview-panel').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── Drag & drop reorder ───────────────────────────────────────────────────────
+function setupDragDrop() {
+  const cards = document.querySelectorAll('.seg-card');
+  let dragIdx = null;
+
+  cards.forEach((card) => {
+    card.addEventListener('dragstart', () => {
+      dragIdx = parseInt(card.dataset.idx);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => { card.classList.remove('dragging'); });
+    card.addEventListener('dragover', (e) => { e.preventDefault(); card.classList.add('drag-over'); });
+    card.addEventListener('dragleave', () => { card.classList.remove('drag-over'); });
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      const dropIdx = parseInt(card.dataset.idx);
+      if (dragIdx !== null && dragIdx !== dropIdx) {
+        const moved = segments.splice(dragIdx, 1)[0];
+        segments.splice(dropIdx, 0, moved);
+        render();
+      }
+    });
+  });
+}
+
+// ── Init: load example session ────────────────────────────────────────────────
+function init() {
+  segments = [
+    { ...DEFAULTS.progressive, type: 'progressive', id: ++segId, _open: false },
+    { ...DEFAULTS.interval,    type: 'interval',    id: ++segId, _open: false },
+    { ...DEFAULTS.cooldown,    type: 'cooldown',    id: ++segId, _open: false },
+  ];
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
