@@ -1254,6 +1254,13 @@
   // Theme toggle
   const toggle = document.getElementById('themeToggle');
   const root   = document.documentElement;
+  if (localStorage.getItem('theme') === 'light') root.setAttribute('data-theme','light');
+  toggle.addEventListener('click', () => {
+    const light = root.getAttribute('data-theme') === 'light';
+    root.setAttribute('data-theme', light ? 'dark' : 'light');
+    toggle.textContent = light ? '🌙' : '☀️';
+    localStorage.setItem('theme', light ? 'dark' : 'light');
+  });
 
   // Restore saved preference
   const saved = localStorage.getItem('theme');
