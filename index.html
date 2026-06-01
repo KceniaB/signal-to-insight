@@ -660,8 +660,9 @@
     <li><a href="#projects">Projects</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
     <li><a href="#tools">Tools</a></li>
-    <li><a href="https://github.com" target="_blank">GitHub ↗</a></li>
+    <li><a href="https://github.com" target="_blank">GitHub ↗</a>
   </ul>
+  <button onclick="(function(){var r=document.documentElement,l=r.getAttribute('data-theme')==='light';r.setAttribute('data-theme',l?'dark':'light');this.textContent=l?'🌙':'☀️';localStorage.setItem('theme',l?'dark':'light')}).call(this)" style="width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border2);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--muted)">🌙</button>
   <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
     <span class="icon-moon">🌙</span>
     <span class="icon-sun">☀️</span>
