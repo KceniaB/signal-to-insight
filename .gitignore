@@ -1,0 +1,14 @@
+# API keys (never commit these)
+.env
+
+# Notebook cache files (too large for GitHub)
+08_embeddings.npy
+08_chunks.parquet
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
