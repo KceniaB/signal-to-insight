@@ -754,12 +754,7 @@
 
     <!-- Card NB08 — Sport Biomechanics Navigator -->
     <div class="card fade-in" onclick="openModal('modal8')">
-      <div class="card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(88,166,255,0.08),rgba(210,168,255,0.08));border-bottom:1px solid var(--border)">
-        <div style="text-align:center;padding:24px">
-          <div style="font-size:2.8rem;margin-bottom:8px">🏃‍♂️📚</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--blue);letter-spacing:0.1em">LLM · RAG · Knowledge Graph</div>
-        </div>
-      </div>
+      <img class="card-img" src="notebooks/figures/08_kg_injury_risk.png" alt="Sport Biomechanics Knowledge Graph">
       <div class="card-body">
         <div class="card-meta">
           <span class="badge badge-red">Sports Science</span>
@@ -768,7 +763,7 @@
         </div>
         <div class="card-title">Sport Biomechanics Literature Navigator</div>
         <div class="card-desc">
-          AI-powered research assistant combining PubMed abstracts, TF-IDF retrieval,
+          AI-powered research assistant combining PubMed abstracts, semantic retrieval (all-MiniLM-L6-v2),
           knowledge graphs (NetworkX), and Groq LLM synthesis. Ask any biomechanics
           question and get evidence-grounded answers with citation trails.
         </div>
@@ -986,7 +981,7 @@
       <div class="card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,166,87,0.08),rgba(63,185,80,0.06));border-bottom:1px solid var(--border);filter:grayscale(30%)">
         <div style="text-align:center;padding:24px">
           <div style="font-size:2.8rem;margin-bottom:8px">🏦📊</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--orange);letter-spacing:0.1em">McKinsey SCR · Gradient Boosting</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--orange);letter-spacing:0.1em">Consulting · Gradient Boosting</div>
         </div>
       </div>
       <div class="card-body">
@@ -998,7 +993,7 @@
         </div>
         <div class="card-title">Banking Churn & Customer Lifetime Value</div>
         <div class="card-desc">
-          Consulting case study using IBM Telco Churn data. McKinsey SCR narrative structure,
+          Consulting case study using IBM Telco Churn data. Consulting SCR narrative structure,
           Gradient Boosting churn model, CLV segmentation, and a Plotly executive dashboard.
         </div>
         <div class="card-footer">
@@ -1351,14 +1346,15 @@
     <div class="modal-body">
       <p class="modal-desc">
         An AI-powered research assistant that retrieves, synthesises, and visualises evidence from 
-        real PubMed abstracts on running biomechanics. The pipeline combines <strong>TF-IDF semantic 
-        retrieval</strong>, a <strong>NetworkX knowledge graph</strong> of concept co-occurrences, 
+        real PubMed abstracts on running biomechanics. The pipeline combines <strong>semantic retrieval
+        (all-MiniLM-L6-v2 sentence embeddings)</strong>, a <strong>NetworkX knowledge graph</strong> 
+        of concept co-occurrences, 
         and <strong>Groq LLM (llama-3.3-70b)</strong> to generate grounded, citation-backed answers 
         to biomechanics questions — no hallucinations, only evidence from the literature.
       </p>
       <div class="method-grid">
         <div class="method-item"><h4>DATA</h4><p>PubMed E-utilities API — real abstracts, no auth required</p></div>
-        <div class="method-item"><h4>RETRIEVAL</h4><p>TF-IDF vectorisation + cosine similarity (scikit-learn)</p></div>
+        <div class="method-item"><h4>RETRIEVAL</h4><p>all-MiniLM-L6-v2 sentence embeddings + cosine similarity</p></div>
         <div class="method-item"><h4>KNOWLEDGE GRAPH</h4><p>NetworkX — concept nodes, co-occurrence edges, community detection</p></div>
         <div class="method-item"><h4>LLM SYNTHESIS</h4><p>Groq llama-3.3-70b-versatile — RAG-grounded answer generation</p></div>
       </div>
