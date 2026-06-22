@@ -659,6 +659,8 @@
   <a class="nav-logo" href="#">~/signal-to-insight</a>
   <ul class="nav-links">
     <li><a href="#projects">Projects</a></li>
+    <li><a href="#tools-projects">Interactive Tools</a></li>
+    <li><a href="#building">Project Building</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
     <li><a href="#tools">Tools</a></li>
     <li><a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub ↗</a></li>
@@ -699,20 +701,20 @@
 <section>
   <div class="stats-bar fade-in">
     <div class="stat">
-      <div class="stat-val" style="color:var(--blue)">7</div>
-      <div class="stat-label">Project modules</div>
+      <div class="stat-val" style="color:var(--blue)">2</div>
+      <div class="stat-label">Live Projects</div>
     </div>
     <div class="stat">
       <div class="stat-val" style="color:var(--green)">22</div>
       <div class="stat-label">Subjects (MMASH)</div>
     </div>
     <div class="stat">
-      <div class="stat-val" style="color:var(--purple)">50</div>
-      <div class="stat-label">Years of shoe data</div>
+      <div class="stat-val" style="color:var(--purple)">2</div>
+      <div class="stat-label">Interactive Tools</div>
     </div>
     <div class="stat">
-      <div class="stat-val" style="color:var(--orange)">8</div>
-      <div class="stat-label">Signal types</div>
+      <div class="stat-val" style="color:var(--orange)">6</div>
+      <div class="stat-label">In Progress</div>
     </div>
   </div>
 </section>
@@ -728,161 +730,57 @@
 
   <div class="projects-grid">
 
-    <!-- Card 1 -->
+    <!-- Card 1 — MMASH -->
     <div class="card fade-in" onclick="openModal('modal1')">
-      <!-- <img class="card-img" src="figures/01_behavior_distribution.png" alt="MMASH Exploration"> -->
       <img class="card-img" src="figures/01_activity_timeline.png" alt="MMASH Exploration">
       <div class="card-body">
         <div class="card-meta">
           <span class="badge badge-blue">Wearable</span>
           <span class="badge badge-green">EDA</span>
-          <span class="badge badge-purple">Sleep</span>
+          <span class="badge badge-purple">HRV</span>
         </div>
-        <div class="card-title">MMASH: Activity & Sleep Exploration</div>
+        <div class="card-title">MMASH: Activity, Sleep & HRV Exploration</div>
         <div class="card-desc">
           Exploratory analysis of the Multilevel Monitoring of Activity and
           Sleep in Healthy People dataset. Behavior distributions, RR interval
-          dynamics, and multi-day HRV patterns.
+          dynamics, RMSSD-based HRV, and consulting-framed insights.
         </div>
         <div class="card-footer">
-          <span>Notebook 01 · 02</span>
-          <a href="#">View details →</a>
+          <span>Notebook 01 · PhysioNet</span>
+          <a href="https://github.com/KceniaB/signal-to-insight/blob/main/01_mmash_exploration_v2.ipynb" target="_blank">View notebook →</a>
         </div>
       </div>
     </div>
 
-    <!-- Card 2 -->
-    <div class="card fade-in" onclick="openModal('modal2')">
-      <img class="card-img" src="figures/02_model_comparison.png" alt="Activity Detection">
+    <!-- Card NB08 — Sport Biomechanics Navigator -->
+    <div class="card fade-in" onclick="openModal('modal8')">
+      <div class="card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(88,166,255,0.08),rgba(210,168,255,0.08));border-bottom:1px solid var(--border)">
+        <div style="text-align:center;padding:24px">
+          <div style="font-size:2.8rem;margin-bottom:8px">🏃‍♂️📚</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--blue);letter-spacing:0.1em">LLM · RAG · Knowledge Graph</div>
+        </div>
+      </div>
       <div class="card-body">
         <div class="card-meta">
-          <span class="badge badge-green">ML</span>
-          <span class="badge badge-blue">Classification</span>
-          <span class="badge badge-orange">Clustering</span>
+          <span class="badge badge-red">Sports Science</span>
+          <span class="badge badge-blue">LLM</span>
+          <span class="badge badge-purple">RAG</span>
         </div>
-        <div class="card-title">Activity Detection: Supervised vs Unsupervised</div>
+        <div class="card-title">Sport Biomechanics Literature Navigator</div>
         <div class="card-desc">
-          Binary active/inactive classification comparing K-Means clustering
-          with Random Forest and SVM. Feature extraction from accelerometer
-          windows with leave-one-subject-out CV.
+          AI-powered research assistant combining PubMed abstracts, TF-IDF retrieval,
+          knowledge graphs (NetworkX), and Groq LLM synthesis. Ask any biomechanics
+          question and get evidence-grounded answers with citation trails.
         </div>
         <div class="card-footer">
-          <span>Notebook 02</span>
-          <a href="#">View details →</a>
+          <span>Notebook 08 · PubMed · Groq</span>
+          <a href="https://github.com/KceniaB/signal-to-insight/blob/main/08_sport_biomechanics_navigator.ipynb" target="_blank">View notebook →</a>
         </div>
       </div>
     </div>
 
-    <!-- Card 3 -->
-    <div class="card fade-in" onclick="openModal('modal3')">
-      <img class="card-img" src="figures/03_ecg_ppg_processing.png" alt="ECG PPG">
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-red">ECG</span>
-          <span class="badge badge-purple">PPG</span>
-          <span class="badge badge-blue">DSP</span>
-        </div>
-        <div class="card-title">ECG & PPG Signal Processing</div>
-        <div class="card-desc">
-          Bandpass filtering, spectral analysis via Welch PSD, R-peak
-          detection, and photoplethysmography peak extraction. Foundation for
-          heart rate and HRV computation from raw wearable signals.
-        </div>
-        <div class="card-footer">
-          <span>Notebook 03</span>
-          <a href="#">View details →</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="card fade-in" onclick="openModal('modal4')">
-      <img class="card-img" src="figures/04_sleep_hr_analysis.png" alt="Sleep">
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-purple">Sleep</span>
-          <span class="badge badge-blue">HRV</span>
-          <span class="badge badge-green">Wearable</span>
-        </div>
-        <div class="card-title">Sleep Staging & Cardiac Dynamics</div>
-        <div class="card-desc">
-          Hypnogram reconstruction, overnight HR profiling by sleep stage,
-          and RMSSD-based HRV analysis. Investigating how sleep architecture
-          shapes cardiac autonomic regulation.
-        </div>
-        <div class="card-footer">
-          <span>Notebook 04</span>
-          <a href="#">View details →</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="card fade-in" onclick="openModal('modal5')">
-      <img class="card-img" src="figures/05_audio_processing.png" alt="Audio">
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">Audio</span>
-          <span class="badge badge-blue">DSP</span>
-          <span class="badge badge-green">Spectral</span>
-        </div>
-        <div class="card-title">Music & Audio Signal Processing</div>
-        <div class="card-desc">
-          FFT spectral analysis, STFT spectrogram, tempo estimation via
-          beat tracking, and chord decomposition. Bridges physiological
-          signal methods with music information retrieval.
-        </div>
-        <div class="card-footer">
-          <span>Notebook 05</span>
-          <a href="#">View details →</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 6 -->
-    <div class="card fade-in" onclick="openModal('modal6')">
-      <img class="card-img" src="figures/06_running_shoes_performance.png" alt="Running">
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-red">Sports</span>
-          <span class="badge badge-orange">Biomechanics</span>
-          <span class="badge badge-green">50 Years</span>
-        </div>
-        <div class="card-title">Running Shoe Drop vs Race Performance (1975–2024)</div>
-        <div class="card-desc">
-          Correlation analysis of heel-to-toe drop height and cushion
-          thickness against marathon, 10K, and 5K world records over 50
-          years. The super-shoe era quantified.
-        </div>
-        <div class="card-footer">
-          <span>Notebook 06</span>
-          <a href="#">View details →</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 7 -->
-    <div class="card fade-in" onclick="openModal('modal7')">
-      <img class="card-img" src="figures/07_bpm_by_zone.png" alt="Music x Running">
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="badge badge-orange">Audio</span>
-          <span class="badge badge-red">Sports</span>
-          <span class="badge badge-green">Cadence</span>
-        </div>
-        <div class="card-title">Music BPM × Running Pace: Finding Your Perfect Tempo</div>
-        <div class="card-desc">
-          Correlating music tempo (BPM) with running cadence and pace targets.
-          Genre BPM distributions mapped to pace zones, cadence entrainment
-          simulation, and a personalised playlist BPM recommender.
-        </div>
-        <div class="card-footer">
-          <span>Notebook 07</span>
-          <a href="#">View details →</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
   <section id="tools-projects">
     <div class="section-label">// 02 — tools</div>
@@ -959,12 +857,163 @@
 
 
     </div>
+</section>
+
+<!-- PROJECT BUILDING -->
+<section id="building">
+  <div class="section-label">// 03 — in progress</div>
+  <h2>Project Building</h2>
+  <p class="section-desc">
+    Work in progress — notebooks being refined, validated, and prepared for the portfolio.
+    Each explores a distinct domain: consulting analytics, physiological signal processing,
+    sleep science, sports biomechanics, and music-performance research.
+  </p>
+
+  <div class="projects-grid">
+
+    <!-- Building: Activity Detection ML -->
+    <div class="card fade-in" style="opacity:0.75" onclick="openModal('modal2')">
+      <img class="card-img" src="figures/02_model_comparison.png" alt="Activity Detection" style="filter:grayscale(30%)">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-green">ML</span>
+          <span class="badge badge-blue">Classification</span>
+          <span class="badge badge-orange">Clustering</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">Activity Detection: Supervised vs Unsupervised</div>
+        <div class="card-desc">
+          Binary active/inactive classification comparing K-Means clustering with
+          Random Forest and SVM on MMASH accelerometry. LOSO cross-validation.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 02</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building: ECG & PPG -->
+    <div class="card fade-in" style="opacity:0.75" onclick="openModal('modal3')">
+      <img class="card-img" src="figures/03_ecg_ppg_processing.png" alt="ECG PPG" style="filter:grayscale(30%)">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-red">ECG</span>
+          <span class="badge badge-purple">PPG</span>
+          <span class="badge badge-blue">DSP</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">ECG & PPG Signal Processing</div>
+        <div class="card-desc">
+          Butterworth bandpass filtering, Welch PSD, R-peak detection, and
+          PPG peak extraction. Foundation for HR and HRV from raw wearable signals.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 03</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building: Sleep Staging -->
+    <div class="card fade-in" style="opacity:0.75" onclick="openModal('modal4')">
+      <img class="card-img" src="figures/04_sleep_hr_analysis.png" alt="Sleep" style="filter:grayscale(30%)">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-purple">Sleep</span>
+          <span class="badge badge-blue">HRV</span>
+          <span class="badge badge-green">Wearable</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">Sleep Staging & Cardiac Dynamics</div>
+        <div class="card-desc">
+          Hypnogram reconstruction, overnight HR profiling by sleep stage, and
+          RMSSD-based HRV. How sleep architecture shapes autonomic regulation.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 04</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building: Running Shoe Biomechanics -->
+    <div class="card fade-in" style="opacity:0.75" onclick="openModal('modal6')">
+      <img class="card-img" src="figures/06_running_shoes_performance.png" alt="Running" style="filter:grayscale(30%)">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-orange">Biomechanics</span>
+          <span class="badge badge-green">50 Years</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">Running Shoe Drop vs Race Performance (1975–2024)</div>
+        <div class="card-desc">
+          Heel-to-toe drop and cushion thickness correlated with marathon, 10K, and 5K
+          world records across three eras — including the super-shoe revolution.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 06</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building: Music BPM x Running -->
+    <div class="card fade-in" style="opacity:0.75" onclick="openModal('modal7')">
+      <img class="card-img" src="figures/07_bpm_by_zone.png" alt="Music x Running" style="filter:grayscale(30%)">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-orange">Audio</span>
+          <span class="badge badge-red">Sports</span>
+          <span class="badge badge-green">Cadence</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">Music BPM × Running Pace: Finding Your Perfect Tempo</div>
+        <div class="card-desc">
+          Music tempo as external pacemaker. Genre BPM distributions mapped to pace zones,
+          cadence entrainment simulation, and a personalised BPM recommender function.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 07</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building: Banking Churn / Consulting -->
+    <div class="card fade-in" style="opacity:0.75">
+      <div class="card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,166,87,0.08),rgba(63,185,80,0.06));border-bottom:1px solid var(--border);filter:grayscale(30%)">
+        <div style="text-align:center;padding:24px">
+          <div style="font-size:2.8rem;margin-bottom:8px">🏦📊</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--orange);letter-spacing:0.1em">McKinsey SCR · Gradient Boosting</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="badge badge-orange">Consulting</span>
+          <span class="badge badge-green">ML</span>
+          <span class="badge badge-blue">CLV</span>
+          <span class="badge" style="color:var(--muted);border-color:var(--border2);background:rgba(139,148,158,0.08)">🔧 In Progress</span>
+        </div>
+        <div class="card-title">Banking Churn & Customer Lifetime Value</div>
+        <div class="card-desc">
+          Consulting case study using IBM Telco Churn data. McKinsey SCR narrative structure,
+          Gradient Boosting churn model, CLV segmentation, and a Plotly executive dashboard.
+        </div>
+        <div class="card-footer">
+          <span>Notebook 07 · IBM Dataset</span>
+          <a href="https://github.com/KceniaB/signal-to-insight" target="_blank">GitHub →</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- PIPELINE -->
 <section id="pipeline">
-  <div class="section-label">// 02 — methodology</div>
+  <div class="section-label">// 04 — methodology</div>
   <h2>Analysis Pipeline</h2>
   <p class="section-desc">
     A reproducible end-to-end workflow from raw sensor data to
@@ -1026,7 +1075,7 @@
 
 <!-- TOOLS -->
 <section id="tools">
-  <div class="section-label">// 03 — stack</div>
+  <div class="section-label">// 05 — stack</div>
   <h2>Tools & Libraries</h2>
   <p class="section-desc">Open-source Python stack built for reproducible biomedical signal processing.</p>
   <div class="tools-grid fade-in">
@@ -1279,6 +1328,39 @@
         <div class="method-item"><h4>GENRES</h4><p>10 genres mapped by BPM distribution to pace zones</p></div>
         <div class="method-item"><h4>ENTRAINMENT</h4><p>Cadence synchronisation simulation (coupling model)</p></div>
         <div class="method-item"><h4>RECOMMENDER</h4><p>recommend_bpm(pace) → ideal BPM + genre matches</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 8 — Sport Biomechanics Navigator -->
+<div class="modal-overlay" id="modal8">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px">
+          <span class="badge badge-red">Sports Science</span>
+          <span class="badge badge-blue">LLM</span>
+          <span class="badge badge-purple">RAG</span>
+          <span class="badge badge-green">Knowledge Graph</span>
+        </div>
+        <div class="modal-title">Sport Biomechanics Literature Navigator</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal8')">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">
+        An AI-powered research assistant that retrieves, synthesises, and visualises evidence from 
+        real PubMed abstracts on running biomechanics. The pipeline combines <strong>TF-IDF semantic 
+        retrieval</strong>, a <strong>NetworkX knowledge graph</strong> of concept co-occurrences, 
+        and <strong>Groq LLM (llama-3.3-70b)</strong> to generate grounded, citation-backed answers 
+        to biomechanics questions — no hallucinations, only evidence from the literature.
+      </p>
+      <div class="method-grid">
+        <div class="method-item"><h4>DATA</h4><p>PubMed E-utilities API — real abstracts, no auth required</p></div>
+        <div class="method-item"><h4>RETRIEVAL</h4><p>TF-IDF vectorisation + cosine similarity (scikit-learn)</p></div>
+        <div class="method-item"><h4>KNOWLEDGE GRAPH</h4><p>NetworkX — concept nodes, co-occurrence edges, community detection</p></div>
+        <div class="method-item"><h4>LLM SYNTHESIS</h4><p>Groq llama-3.3-70b-versatile — RAG-grounded answer generation</p></div>
       </div>
     </div>
   </div>
