@@ -1,5 +1,12 @@
 # API keys (never commit these)
 .env
+notebooks/.env
+08_embeddings.npy
+08_chunks.parquet
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store 
 
 # Notebook cache files (too large for GitHub)
 08_embeddings.npy
