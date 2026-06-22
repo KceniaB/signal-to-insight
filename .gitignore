@@ -1,8 +1,6 @@
 # API keys (never commit these)
 .env
 notebooks/.env
-08_embeddings.npy
-08_chunks.parquet
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
@@ -11,6 +9,9 @@ __pycache__/
 # Notebook cache files (too large for GitHub)
 08_embeddings.npy
 08_chunks.parquet
+
+# just notes
+notebooks/my_notes.txt
 
 # Python
 __pycache__/
