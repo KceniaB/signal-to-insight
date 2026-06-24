@@ -444,15 +444,16 @@ function renderCard(item, i) {
     ? '' // exact first alias — no need to show matched name
     : `<div class="card-matched">→ matched as <strong style="color:var(--text)">${escHtml(ex.aliases[0])}</strong></div>`;
 
-  // Image: try GIF, fallback to placeholder with wiki link
   const imgSrc = imgPath(ex.imageId);
-  const fallback = `this.onerror=null;this.parentNode.innerHTML='<div class=\\"img-placeholder\\"><div class=\\"icon\\">🏋️</div><span>${escHtml(ex.aliases[0])}</span><a href=\\"${escHtml(ex.wikiLink)}\\" target=\\"_blank\\">View on Wikipedia →</a></div>'`;
+
+
 
   card.innerHTML = `
-    <div class="card-image-wrap">
-      <img src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}" onerror="${fallback}">
+    <div class="card-image-wrap" id="imgwrap-${i}">
+      <img id="cardimg-${i}" src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}"
+        data-name="${escHtml(ex.aliases[0])}"
+        onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'img-placeholder\'><div class=\'icon\'>🏋️</div><span>'+this.dataset.name+'</span></div>'">
       ${matchBadge(score)}
-    </div>
     <div class="card-body">
       <div class="card-index">EX ${String(i+1).padStart(2,'0')}</div>
       <div class="card-name">${escHtml(rawName)}</div>
@@ -531,6 +532,20 @@ function run() {
 
     matched.forEach((item, i) => renderCard(item, i));
 
+    // Animate: toggle between frame 0 and frame 1 every 900ms
+    matched.forEach((item, idx) => {
+      if (!item.ex.imageId) return;
+      const src0 = IMG_BASE + item.ex.imageId + '/0.jpg';
+      const src1 = IMG_BASE + item.ex.imageId + '/1.jpg';
+      let frame = 0;
+      setInterval(() => {
+        const img = document.getElementById('cardimg-' + idx);
+        if (!img) return;
+        frame = 1 - frame;
+        img.src = frame === 1 ? src1 : src0;
+      }, 900);
+    });
+
     // Unmatched section
     if (unmatched.length) {
       document.getElementById('unmatchedSection').innerHTML = `
@@ -543,19 +558,6 @@ function run() {
     if (matched.length) {
       setStatus(`Done — ${matched.length} exercise${matched.length>1?'s':''} parsed${unmatched.length?' ('+unmatched.length+' unrecognised)':''}.`, 'success', false);
       sessionFooter.className = 'session-footer active';
-      // Animate: toggle between frame 0 and frame 1 every 900ms
-      matched.forEach((item, i) => {
-        if (!item.ex.imageId) return;
-        const src0 = IMG_BASE + item.ex.imageId + '/0.jpg';
-        const src1 = IMG_BASE + item.ex.imageId + '/1.jpg';
-        let frame = 0;
-        setInterval(() => {
-          const img = document.getElementById('cardimg-' + i);
-          if (!img) return;
-          frame = 1 - frame;
-          img.src = frame === 1 ? src1 : src0;
-        }, 900);
-      });
     } else {
       setStatus('No exercises matched. Check spelling or add to the dictionary.', 'error', false);
     }
