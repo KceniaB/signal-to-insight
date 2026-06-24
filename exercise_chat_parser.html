@@ -76,7 +76,7 @@
   .stat-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;
     color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
 
-  .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+  .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
   .exercise-card{background:var(--surface);border:1px solid var(--border);
     border-radius:12px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;
     display:flex;flex-direction:column}
@@ -119,7 +119,7 @@
   .tag-body{color:var(--green);border-color:rgba(63,185,80,0.3);background:rgba(63,185,80,0.08)}
   .card-tip{font-family:'JetBrains Mono',monospace;font-size:0.72rem;
     color:var(--muted);line-height:1.6;margin-top:auto;
-    padding-top:10px;border-top:1px solid var(--border)}
+    padding-top:10px;border-top:1px solid var(--border);word-break:break-word}
 
   .unmatched-section{margin-top:28px;padding:18px 22px;
     background:var(--surface);border:1px solid var(--border);
@@ -534,6 +534,11 @@ function parseText(text) {
     // Strip bullet chars
     const clean = seg.replace(/^[\*\-•·▪▸►\d+\.\)]+\s*/, '').trim();
     if (!clean || /^(note|tip|rest|remember|make sure|perform|complete)/i.test(clean)) continue;
+
+    // Skip pure equipment words (not exercises)
+    const EQUIPMENT = /^(dumbbells?|barbells?|kettlebells?|resistance bands?|foam roller|mat|cable|machine|weight|weights|band|bands|rope|bar|rack|plate|plates|belt|gloves|halteres?|elástico|barra)$/i;
+    const stripped = clean.replace(/^\d+\s*/, '').replace(/[×xX]\s*[\d\-–]+.*$/, '').trim();
+    if (EQUIPMENT.test(stripped)) continue;
 
     // Extract numbers + prescription FIRST
     // Patterns: "3×15", "3x15", "3 x 15", "2x30s", "3x30-45s", standalone "30s"
