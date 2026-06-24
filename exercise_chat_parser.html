@@ -619,11 +619,11 @@ function renderCard(item, i) {
     const imgSrc = imgPath(ex.imageId);
 
   card.innerHTML = `
-    <div class="card-image-wrap" id="imgwrap-\${i}">
-      <img id="cardimg-\${i}" src="\${escHtml(imgSrc)}" alt="\${escHtml(ex.aliases[0])}"
-        data-name="\${escHtml(ex.aliases[0])}"
+    <div class="card-image-wrap" id="imgwrap-${i}">
+      <img id="cardimg-${i}" src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}"
+        data-name="${escHtml(ex.aliases[0])}"
         onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'img-placeholder\'><div class=\'icon\'>🏋️</div><span>'+this.dataset.name+'</span></div>'">
-      \${matchBadge(score)}
+      ${matchBadge(score)}
     </div>
     <div class="card-body">
       <div class="card-index">EX ${String(i+1).padStart(2,'0')}</div>
