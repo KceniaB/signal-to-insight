@@ -446,11 +446,12 @@ function renderCard(item, i) {
 
   // Image: try GIF, fallback to placeholder with wiki link
   const imgSrc = imgPath(ex.imageId);
-  const fallback = `this.onerror=null;this.parentNode.innerHTML='<div class=\\"img-placeholder\\"><div class=\\"icon\\">🏋️</div><span>${escHtml(ex.aliases[0])}</span><a href=\\"${escHtml(ex.wikiLink)}\\" target=\\"_blank\\">View on Wikipedia →</a></div>'`;
 
   card.innerHTML = `
-    <div class="card-image-wrap">
-      <img src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}" onerror="${fallback}">
+    <div class="card-image-wrap" id="imgwrap-${i}">
+      <img id="cardimg-${i}" src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}"
+        data-name="${escHtml(ex.aliases[0])}"
+        onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'img-placeholder\'><div class=\'icon\'>🏋️</div><span>'+this.dataset.name+'</span></div>'">
       ${matchBadge(score)}
     </div>
     <div class="card-body">
@@ -490,8 +491,7 @@ function resetTool() {
   document.getElementById('charCount').textContent = '0 characters';
   exerciseGrid.innerHTML = '';
   document.getElementById('unmatchedSection').innerHTML = '';
-  // Kill all previous animation intervals
-  if (window._animIntervals) { window._animIntervals.forEach(clearInterval); window._animIntervals = []; }
+  (window._ivs || []).forEach(clearInterval); window._ivs = [];
   summaryStrip.className = 'summary-strip';
   sessionFooter.className = 'session-footer';
   statusBar.className = 'status-bar';
@@ -506,8 +506,7 @@ function run() {
   parseBtn.disabled = true;
   exerciseGrid.innerHTML = '';
   document.getElementById('unmatchedSection').innerHTML = '';
-  // Kill all previous animation intervals
-  if (window._animIntervals) { window._animIntervals.forEach(clearInterval); window._animIntervals = []; }
+  (window._ivs || []).forEach(clearInterval); window._ivs = [];
   summaryStrip.className = 'summary-strip';
   sessionFooter.className = 'session-footer';
   setStatus('Parsing…', 'info', true);
@@ -535,24 +534,25 @@ function run() {
 
     matched.forEach((item, i) => renderCard(item, i));
 
-    // Animate: toggle /0.jpg ↔ /1.jpg; session-stamped to prevent cross-parse bleed
-    if (!window._animIntervals) window._animIntervals = [];
+    // Kill previous parse animations
+    (window._ivs || []).forEach(clearInterval);
+    window._ivs = [];
     const _ts = Date.now();
     matched.forEach((item, i) => {
       if (!item.ex.imageId) return;
-      const src0 = IMG_BASE + item.ex.imageId + '/0.jpg?t=' + _ts;
-      const src1 = IMG_BASE + item.ex.imageId + '/1.jpg?t=' + _ts;
-      const imgEl = document.getElementById('cardimg-' + i);
-      if (!imgEl) return;
-      imgEl.dataset.session = _ts;
-      let frame = 0;
-      const iv = setInterval(() => {
+      const s0 = IMG_BASE + item.ex.imageId + '/0.jpg';
+      const s1 = IMG_BASE + item.ex.imageId + '/1.jpg';
+      let f = 0;
+      window._ivs.push(setInterval(() => {
         const el = document.getElementById('cardimg-' + i);
-        if (!el || el.dataset.session != _ts) { clearInterval(iv); return; }
-        frame = 1 - frame;
-        el.src = frame === 1 ? src1 : src0;
-      }, 900);
-      window._animIntervals.push(iv);
+        if (!el || el.dataset.ts != _ts) { return; }
+        el.src = (f = 1 - f) ? s1 : s0;
+      }, 900));
+      // Stamp after short delay so img has loaded
+      setTimeout(() => {
+        const el = document.getElementById('cardimg-' + i);
+        if (el) el.dataset.ts = _ts;
+      }, 100);
     });
 
     // Unmatched section
