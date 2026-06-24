@@ -76,7 +76,7 @@
   .stat-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;
     color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
 
-  .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
+  .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
   .exercise-card{background:var(--surface);border:1px solid var(--border);
     border-radius:12px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;
     display:flex;flex-direction:column}
@@ -218,262 +218,95 @@ Lateral band walks — 2×10–15 steps each way"></textarea>
 // wikiLink  = shown when no GIF is found yet
 // ═══════════════════════════════════════════════════════════════════════
 const EXERCISES = [
-
   // ── GLUTES / HIPS ──
-  { slug:'glute-bridge', imageId:'Barbell_Glute_Bridge',
-    aliases:['glute bridge','glute bridges','hip bridge','bridges','ponte de glúteos','ponte glúteo','elevação de quadril','pontes'],
-    body:'Glutes', tip:'Squeeze at the top, hold 1 s.' },
-  { slug:'hip-thrust', imageId:'Barbell_Hip_Thrust',
-    aliases:['hip thrust','hip thrusts','barbell hip thrust','thrust de quadril','empurrão de quadril'],
-    body:'Glutes', tip:'Drive through your heels, not your toes.' },
-  { slug:'clamshell', imageId:'Side_Leg_Raises',
-    aliases:['clamshell','clamshells','clam shell','clam','abdutor deitado','abertura de perna deitada'],
-    body:'Glutes', tip:'Keep hips stacked; only the top knee moves.' },
-  { slug:'donkey-kick', imageId:'Rear_Leg_Raises',
-    aliases:['donkey kick','donkey kicks','quadruped hip extension','coice de burro','extensão de quadril'],
-    body:'Glutes', tip:'Keep hips square to the floor.' },
-  { slug:'fire-hydrant', imageId:'Side_Leg_Raises',
-    aliases:['fire hydrant','fire hydrants','hidrante','abdução quadrupede'],
-    body:'Glutes', tip:'Slow and controlled; avoid hip rotation.' },
-  { slug:'lateral-band-walk', imageId:'Hip_Extension_with_Bands',
-    aliases:['lateral band walk','lateral band walks','band walk','side band walk','monster walk','caminhada lateral com band','passo lateral com elástico'],
-    body:'Hip abductors', tip:'Keep tension in the band throughout.' },
-  { slug:'sumo-squat', imageId:'Plie_Dumbbell_Squat',
-    aliases:['sumo squat','sumo squats','plie squat','wide squat','agachamento sumô','agachamento sumo','agachamento largo'],
-    body:'Glutes', tip:'Toes out 45°; push knees out as you descend.' },
-  { slug:'single-leg-glute-bridge', imageId:'Single_Leg_Glute_Bridge',
-    aliases:['single leg glute bridge','single leg bridge','one leg bridge','ponte unilateral','ponte uma perna'],
-    body:'Glutes', tip:'Keep hips level throughout the movement.' },
+  { slug:'glute-bridge', imageId:'Glute_Bridge',     aliases:['glute bridge','glute bridges','hip bridge','bridges'],
+    body:'Glutes', tip:'Squeeze at the top, hold 1 s.', wikiLink:'https://en.wikipedia.org/wiki/Glute_bridge' },
+  { slug:'hip-thrust', imageId:'Barbell_Hip_Thrust',       aliases:['hip thrust','hip thrusts','barbell hip thrust'],
+    body:'Glutes', tip:'Drive through your heels, not your toes.', wikiLink:'https://en.wikipedia.org/wiki/Hip_thrust' },
+  { slug:'clamshell', imageId:'Clamshell',        aliases:['clamshell','clamshells','clam shell','clam'],
+    body:'Glutes', tip:'Keep hips stacked; only the top knee moves.', wikiLink:'https://en.wikipedia.org/wiki/Clamshell_(exercise)' },
+  { slug:'donkey-kick', imageId:'Donkey_Kick',      aliases:['donkey kick','donkey kicks','quadruped hip extension'],
+    body:'Glutes', tip:'Keep hips square to the floor.', wikiLink:'https://en.wikipedia.org/wiki/Donkey_kick' },
+  { slug:'fire-hydrant', imageId:'Fire_Hydrant',     aliases:['fire hydrant','fire hydrants'],
+    body:'Glutes', tip:'Slow and controlled; avoid hip rotation.', wikiLink:'https://en.wikipedia.org/wiki/Fire_hydrant_(exercise)' },
+  { slug:'lateral-band-walk', imageId:'Band_Hip_Abduction',aliases:['lateral band walk','lateral band walks','band walk','side band walk','monster walk'],
+    body:'Hip abductors', tip:'Keep tension in the band throughout.', wikiLink:'https://en.wikipedia.org/wiki/Resistance_band' },
 
   // ── CORE ──
-  { slug:'plank', imageId:'Plank',
-    aliases:['plank','planks','front plank','prancha','prancha frontal','isometria'],
-    body:'Core', tip:'Squeeze glutes and brace your abs.' },
-  { slug:'side-plank', imageId:'Side_Bridge',
-    aliases:['side plank','side planks','lateral plank','prancha lateral','prancha de lado'],
-    body:'Core', tip:'Stack hips; keep body in a straight line.' },
-  { slug:'crunch', imageId:'Crunches',
-    aliases:['crunch','crunches','ab crunch','abdominal','abdominais','crunch abdominal'],
-    body:'Core', tip:"Exhale on the way up; don't pull your neck." },
-  { slug:'sit-up', imageId:'Sit-Up',
-    aliases:['sit up','sit-up','sit ups','situp','situps','abdominal completo','sentar e levantar'],
-    body:'Core', tip:'Engage core from the start; control the descent.' },
-  { slug:'dead-bug', imageId:'Dead_Bug',
-    aliases:['dead bug','dead bugs','dead-bug','inseto morto'],
-    body:'Core', tip:'Keep your lower back pressed to the floor.' },
-  { slug:'bird-dog', imageId:'Iron_Crosses_stretch',
-    aliases:['bird dog','bird-dog','bird dogs','cão apontador','extensão contralateral'],
-    body:'Core', tip:'Move opposite arm and leg; pause at extension.' },
-  { slug:'hollow-body-hold', imageId:'Flat_Bench_Lying_Leg_Raise',
-    aliases:['hollow body','hollow hold','hollow body hold','posição banana','hollowbody'],
-    body:'Core', tip:'Lower back flat to floor; arms and legs low.' },
-  { slug:'mountain-climber', imageId:'Mountain_Climbers',
-    aliases:['mountain climber','mountain climbers','mountain-climbers','escalador','corrida na prancha'],
-    body:'Core', tip:'Hips level; drive knees fast for cardio effect.' },
-  { slug:'leg-raise', imageId:'Flat_Bench_Lying_Leg_Raise',
-    aliases:['leg raise','leg raises','lying leg raise','elevação de pernas','levantamento de pernas'],
-    body:'Core', tip:'Lower back stays glued to the floor.' },
-  { slug:'russian-twist', imageId:'Air_Bike',
-    aliases:['russian twist','russian twists','torção russa','rotação de tronco'],
-    body:'Core', tip:'Lean back 45°; rotate from the ribcage.' },
-  { slug:'bicycle-crunch', imageId:'Air_Bike',
-    aliases:['bicycle crunch','bicycle crunches','bike crunch','crunch bicicleta','abdominal bicicleta'],
-    body:'Core', tip:'Slow and controlled; opposite elbow to knee.' },
+  { slug:'plank', imageId:'Plank',            aliases:['plank','planks','front plank'],
+    body:'Core', tip:'Squeeze glutes and brace your abs.', wikiLink:'https://en.wikipedia.org/wiki/Plank_(exercise)' },
+  { slug:'side-plank', imageId:'Side_Plank',       aliases:['side plank','side planks','lateral plank'],
+    body:'Core', tip:'Stack hips; keep body in a straight line.', wikiLink:'https://en.wikipedia.org/wiki/Side_plank' },
+  { slug:'crunch', imageId:'Crunch',           aliases:['crunch','crunches','ab crunch'],
+    body:'Core', tip:'Exhale on the way up; don\'t pull your neck.', wikiLink:'https://en.wikipedia.org/wiki/Crunch_(exercise)' },
+  { slug:'sit-up', imageId:'3_4_Sit-Up',           aliases:['sit up','sit-up','sit ups','situp','situps'],
+    body:'Core', tip:'Engage core from the start; control the descent.', wikiLink:'https://en.wikipedia.org/wiki/Sit-up' },
+  { slug:'dead-bug', imageId:'Dead_Bug',         aliases:['dead bug','dead bugs','dead-bug'],
+    body:'Core', tip:'Keep your lower back pressed to the floor.', wikiLink:'https://en.wikipedia.org/wiki/Core_stability' },
+  { slug:'bird-dog', imageId:'Bird_Dog',         aliases:['bird dog','bird-dog','bird dogs'],
+    body:'Core', tip:'Move opposite arm and leg; pause at extension.', wikiLink:'https://en.wikipedia.org/wiki/Bird_dog_(exercise)' },
+  { slug:'hollow-body-hold', imageId:'Hollow_Body_Hold', aliases:['hollow body','hollow hold','hollow body hold'],
+    body:'Core', tip:'Lower back flat to floor; arms and legs low.', wikiLink:'https://en.wikipedia.org/wiki/Hollow_body_hold' },
+  { slug:'mountain-climber', imageId:'Mountain_Climber', aliases:['mountain climber','mountain climbers','mountain-climbers'],
+    body:'Core', tip:'Hips level; drive knees fast for cardio effect.', wikiLink:'https://en.wikipedia.org/wiki/Mountain_climber_(exercise)' },
 
   // ── LEGS ──
-  { slug:'squat', imageId:'Bodyweight_Squat',
-    aliases:['squat','squats','bodyweight squat','air squat','agachamento','agachamentos','agachar'],
-    body:'Quads', tip:'Chest up, knees tracking over toes.' },
-  { slug:'lunge', imageId:'Bodyweight_Walking_Lunge',
-    aliases:['lunge','lunges','walking lunge','forward lunge','avanço','afundo','passada','lunges caminhando'],
-    body:'Quads', tip:'Back knee hovers 2 cm above the floor.' },
-  { slug:'reverse-lunge', imageId:'Dumbbell_Rear_Lunge',
-    aliases:['reverse lunge','reverse lunges','step back lunge','avanço reverso','afundo reverso','passada para trás'],
-    body:'Quads', tip:'Step back, not sideways; torso upright.' },
-  { slug:'step-up', imageId:'Step-up_with_Knee_Raise',
-    aliases:['step up','step ups','step-up','box step up','subida no step','step','subida no banco'],
-    body:'Quads', tip:'Push through your front heel to stand.' },
-  { slug:'wall-sit', imageId:'Sit_Squats',
-    aliases:['wall sit','wall sits','wall squat','cadeira na parede','agachamento na parede','isometria de perna'],
-    body:'Quads', tip:'Thighs parallel to the floor; back flat.' },
-  { slug:'goblet-squat', imageId:'Goblet_Squat',
-    aliases:['goblet squat','goblet squats','agachamento goblet','agachamento com haltere'],
-    body:'Quads', tip:'Elbows inside knees at the bottom.' },
-  { slug:'bulgarian-split-squat', imageId:'Split_Squats',
-    aliases:['bulgarian split squat','split squat','rear foot elevated split squat','agachamento búlgaro','agachamento bulgaro','agachamento unilateral'],
-    body:'Quads', tip:'Front shin stays vertical; hips drop straight down.' },
-  { slug:'leg-press', imageId:'Leg_Press',
-    aliases:['leg press','prensa de pernas','leg press máquina'],
-    body:'Quads', tip:"Feet hip-width; don't lock knees at the top." },
-  { slug:'deadlift', imageId:'Barbell_Deadlift',
-    aliases:['deadlift','deadlifts','rdl','romanian deadlift','stiff leg deadlift','levantamento terra','terra','levantamento terra romeno'],
-    body:'Hamstrings', tip:'Hinge at the hip; bar stays close to legs.' },
-  { slug:'nordic-curl', imageId:'Natural_Glute_Ham_Raise',
-    aliases:['nordic curl','nordic curls','nordic hamstring','hamstring curl','curl nórdico','flexão nórdica'],
-    body:'Hamstrings', tip:'Resist the fall as long as possible.' },
-  { slug:'leg-curl', imageId:'Lying_Leg_Curls',
-    aliases:['leg curl','leg curls','lying leg curl','flexão de pernas','curl de perna'],
-    body:'Hamstrings', tip:'Control the lowering phase.' },
-  { slug:'calf-raise', imageId:'Standing_Calf_Raises',
-    aliases:['calf raise','calf raises','heel raise','heel raises','elevação de panturrilha','panturrilha','elevação de calcanhar'],
-    body:'Calves', tip:'Full range — all the way up and down.' },
-
-  // ── DUMBBELL EXERCISES ──
-  { slug:'dumbbell-squat', imageId:'Dumbbell_Squat',
-    aliases:['dumbbell squat','db squat','squat with dumbbells','agachamento com halteres','agachamento haltere'],
-    body:'Quads', tip:'Hold dumbbells at sides; same squat cues apply.' },
-  { slug:'dumbbell-lunge', imageId:'Dumbbell_Lunges',
-    aliases:['dumbbell lunge','dumbbell lunges','db lunge','afundo com halteres','avanço com halteres'],
-    body:'Quads', tip:'Keep torso upright; control the step.' },
-  { slug:'dumbbell-deadlift', imageId:'Stiff-Legged_Dumbbell_Deadlift',
-    aliases:['dumbbell deadlift','db deadlift','dumbbell rdl','terra com halteres','levantamento terra haltere'],
-    body:'Hamstrings', tip:'Hinge at hips; dumbbells stay close to legs.' },
-  { slug:'dumbbell-bench-press', imageId:'Dumbbell_Bench_Press',
-    aliases:['dumbbell bench press','dumbbell press','db bench press','db press','supino com halteres','supino haltere'],
-    body:'Chest', tip:'Touch dumbbells at the top; full stretch at bottom.' },
-  { slug:'dumbbell-row', imageId:'One-Arm_Dumbbell_Row',
-    aliases:['dumbbell row','db row','one arm row','single arm row','remada com haltere','remada unilateral'],
-    body:'Back', tip:'Pull to your hip, not your shoulder.' },
-  { slug:'dumbbell-shoulder-press', imageId:'Dumbbell_Shoulder_Press',
-    aliases:['dumbbell shoulder press','db shoulder press','desenvolvimento com halteres','ombro haltere'],
-    body:'Shoulders', tip:'Press straight up; avoid flaring elbows.' },
-  { slug:'dumbbell-curl', imageId:'Dumbbell_Bicep_Curl',
-    aliases:['dumbbell curl','db curl','dumbbell bicep curl','alternating dumbbell curl','rosca haltere','rosca alternada'],
-    body:'Biceps', tip:'Supinate the wrist as you curl up.' },
-  { slug:'dumbbell-fly', imageId:'Dumbbell_Bench_Press',
-    aliases:['dumbbell fly','dumbbell flyes','db fly','chest fly','crucifixo','crucifixo haltere'],
-    body:'Chest', tip:'Slight bend in elbows; feel the stretch.' },
-  { slug:'dumbbell-lateral-raise', imageId:'Side_Lateral_Raise',
-    aliases:['dumbbell lateral raise','db lateral raise','elevação lateral com halteres','elevação lateral'],
-    body:'Shoulders', tip:'Lead with elbows; stop at shoulder height.' },
-  { slug:'dumbbell-kickback', imageId:'Tricep_Dumbbell_Kickback',
-    aliases:['tricep kickback','dumbbell kickback','db kickback','extensão tríceps haltere','tríceps coice'],
-    body:'Triceps', tip:'Upper arm stays parallel to the floor.' },
-
-  // ── KETTLEBELL ──
-  { slug:'kettlebell-swing', imageId:'Kettlebell_Sumo_High_Pull',
-    aliases:['kettlebell swing','kb swing','swing','balanço com kettlebell','swing kettlebell'],
-    body:'Full body', tip:"Hinge don't squat; power from the hips." },
-  { slug:'kettlebell-goblet-squat', imageId:'Goblet_Squat',
-    aliases:['kettlebell goblet squat','kb goblet squat','agachamento goblet kettlebell'],
-    body:'Quads', tip:'Elbows inside knees; chest tall.' },
-  { slug:'kettlebell-press', imageId:'Kettlebell_Seated_Press',
-    aliases:['kettlebell press','kb press','kettlebell overhead press','desenvolvimento kettlebell'],
-    body:'Shoulders', tip:'Pack the shoulder; press straight up.' },
+  { slug:'squat', imageId:'Bodyweight_Squat',            aliases:['squat','squats','bodyweight squat','air squat'],
+    body:'Quads', tip:'Chest up, knees tracking over toes.', wikiLink:'https://en.wikipedia.org/wiki/Squat_(exercise)' },
+  { slug:'lunge', imageId:'Lunge',            aliases:['lunge','lunges','walking lunge','forward lunge'],
+    body:'Quads', tip:'Back knee hovers 2 cm above the floor.', wikiLink:'https://en.wikipedia.org/wiki/Lunge_(exercise)' },
+  { slug:'reverse-lunge', imageId:'Reverse_Lunge',    aliases:['reverse lunge','reverse lunges','step back lunge'],
+    body:'Quads', tip:'Step back, not sideways; torso upright.', wikiLink:'https://en.wikipedia.org/wiki/Lunge_(exercise)' },
+  { slug:'step-up', imageId:'Barbell_Step_Ups',          aliases:['step up','step ups','step-up','box step up'],
+    body:'Quads', tip:'Push through your front heel to stand.', wikiLink:'https://en.wikipedia.org/wiki/Step_up_(exercise)' },
+  { slug:'wall-sit', imageId:'Wall_Squat',         aliases:['wall sit','wall sits','wall squat'],
+    body:'Quads', tip:'Thighs parallel to the floor; back flat.', wikiLink:'https://en.wikipedia.org/wiki/Wall_sit' },
+  { slug:'deadlift', imageId:'Deadlift',         aliases:['deadlift','deadlifts','rdl','romanian deadlift','stiff leg deadlift'],
+    body:'Hamstrings', tip:'Hinge at the hip; bar stays close to legs.', wikiLink:'https://en.wikipedia.org/wiki/Deadlift' },
+  { slug:'nordic-curl', imageId:'Nordic_Curl',      aliases:['nordic curl','nordic curls','nordic hamstring','hamstring curl'],
+    body:'Hamstrings', tip:'Resist the fall as long as possible.', wikiLink:'https://en.wikipedia.org/wiki/Nordic_curl' },
+  { slug:'calf-raise', imageId:'Standing_Calf_Raises',       aliases:['calf raise','calf raises','heel raise','heel raises'],
+    body:'Calves', tip:'Full range — all the way up and down.', wikiLink:'https://en.wikipedia.org/wiki/Calf_raise' },
 
   // ── UPPER BODY ──
-  { slug:'push-up', imageId:'Pushups',
-    aliases:['push up','push-up','pushup','push ups','pushups','flexão','flexões','flexão de braço','flexão de braços'],
-    body:'Chest', tip:'Body in a straight line from head to heel.' },
-  { slug:'incline-push-up', imageId:'Incline_Push-Up',
-    aliases:['incline push up','incline pushup','elevated push up','flexão inclinada','flexão no banco'],
-    body:'Chest', tip:'Hands on bench; great for upper chest.' },
-  { slug:'bench-press', imageId:'Barbell_Bench_Press_-_Medium_Grip',
-    aliases:['bench press','chest press','flat bench','barbell bench press','supino','supino reto','supino plano'],
-    body:'Chest', tip:'Retract shoulder blades before pressing.' },
-  { slug:'pull-up', imageId:'Pullups',
-    aliases:['pull up','pull-up','pullup','pull ups','pullups','chin up','chin-up','chinup','barra fixa','barra','puxada na barra'],
-    body:'Back', tip:'Dead hang start; lead with your elbows.' },
-  { slug:'bent-over-row', imageId:'Bent_Over_Barbell_Row',
-    aliases:['bent over row','barbell row','row','rows','remada curvada','remada pronada','remada'],
-    body:'Back', tip:'Keep back flat; pull to your hip, not chest.' },
-  { slug:'seated-row', imageId:'Seated_Cable_Rows',
-    aliases:['seated row','cable row','seated cable row','remada sentada','remada baixa','remada na polia'],
-    body:'Back', tip:'Keep torso upright; squeeze shoulder blades.' },
-  { slug:'lat-pulldown', imageId:'Wide-Grip_Lat_Pulldown',
-    aliases:['lat pulldown','lat pull down','pulldown','puxada alta','puxada frontal'],
-    body:'Back', tip:'Lean back slightly; pull bar to upper chest.' },
-  { slug:'superman', imageId:'Glute_Ham_Raise',
-    aliases:['superman','back extension','hyperextension','extensão de coluna','extensão lombar','super-homem'],
-    body:'Lower back', tip:'Squeeze glutes and hold at the top.' },
-  { slug:'shoulder-press', imageId:'Seated_Dumbbell_Press',
-    aliases:['shoulder press','overhead press','ohp','military press','desenvolvimento','press militar','press ombro'],
-    body:'Shoulders', tip:'Avoid arching the lower back at the top.' },
-  { slug:'lateral-raise', imageId:'Side_Lateral_Raise',
-    aliases:['lateral raise','lateral raises','side raise','side raises','elevação lateral','elevações laterais'],
-    body:'Shoulders', tip:'Lead with elbows; stop at shoulder height.' },
-  { slug:'front-raise', imageId:'Front_Dumbbell_Raise',
-    aliases:['front raise','front raises','elevação frontal','elevações frontais'],
-    body:'Shoulders', tip:'Arms parallel to floor at the top; slow down.' },
-  { slug:'face-pull', imageId:'Face_Pull',
-    aliases:['face pull','face pulls','puxada para o rosto','pull para a face'],
-    body:'Shoulders', tip:'Elbows high; pull to forehead height.' },
-  { slug:'bicep-curl', imageId:'Barbell_Curl',
-    aliases:['bicep curl','bicep curls','biceps curl','curl','curls','rosca direta','rosca bíceps','rosca','roscas'],
-    body:'Biceps', tip:'Keep elbows fixed; control the lowering.' },
-  { slug:'hammer-curl', imageId:'Alternate_Hammer_Curl',
-    aliases:['hammer curl','hammer curls','rosca martelo','rosca neutra'],
-    body:'Biceps', tip:'Neutral grip; great for brachialis too.' },
-  { slug:'dip', imageId:'Dips_-_Triceps_Version',
-    aliases:['dip','dips','tricep dip','bench dip','chair dip','mergulho','mergulhos','tríceps banco'],
-    body:'Triceps', tip:'Lean forward slightly to hit chest more.' },
-  { slug:'tricep-extension', imageId:'Triceps_Pushdown',
-    aliases:['tricep extension','triceps extension','skull crusher','tricep pushdown','tríceps corda','tríceps polia','extensão de tríceps'],
-    body:'Triceps', tip:'Full lockout at the bottom.' },
-  { slug:'upright-row', imageId:'Upright_Barbell_Row',
-    aliases:['upright row','upright rows','remada alta','remada vertical'],
-    body:'Shoulders', tip:'Elbows lead; raise to chin height.' },
-  { slug:'shrug', imageId:'Calf-Machine_Shoulder_Shrug',
-    aliases:['shrug','shrugs','shoulder shrug','encolhimento de ombros','encolhimento'],
-    body:'Traps', tip:'Straight up and down; no rolling the shoulders.' },
+  { slug:'push-up', imageId:'Push-Up',          aliases:['push up','push-up','pushup','push ups','pushups'],
+    body:'Chest', tip:'Body in a straight line from head to heel.', wikiLink:'https://en.wikipedia.org/wiki/Push-up' },
+  { slug:'bench-press', imageId:'Barbell_Bench_Press_-_Medium_Grip',      aliases:['bench press','chest press','flat bench'],
+    body:'Chest', tip:'Retract shoulder blades before pressing.', wikiLink:'https://en.wikipedia.org/wiki/Bench_press' },
+  { slug:'pull-up', imageId:'Pull-Up',          aliases:['pull up','pull-up','pullup','pull ups','pullups','chin up','chin-up','chinup'],
+    body:'Back', tip:'Dead hang start; lead with your elbows.', wikiLink:'https://en.wikipedia.org/wiki/Pull-up_(exercise)' },
+  { slug:'bent-over-row', imageId:'Bent_Over_Barbell_Row',    aliases:['row','rows','bent over row','dumbbell row','db row','barbell row'],
+    body:'Back', tip:'Keep back flat; pull to your hip, not chest.', wikiLink:'https://en.wikipedia.org/wiki/Bent-over_row' },
+  { slug:'lat-pulldown', imageId:'Wide-Grip_Lat_Pulldown',     aliases:['lat pulldown','lat pull down','pulldown'],
+    body:'Back', tip:'Lean back slightly; pull bar to upper chest.', wikiLink:'https://en.wikipedia.org/wiki/Lat_pulldown' },
+  { slug:'shoulder-press', imageId:'Seated_Dumbbell_Shoulder_Press',   aliases:['shoulder press','overhead press','ohp','military press','dumbbell press'],
+    body:'Shoulders', tip:'Avoid arching the lower back at the top.', wikiLink:'https://en.wikipedia.org/wiki/Overhead_press' },
+  { slug:'lateral-raise', imageId:'Side_Lateral_Raise',    aliases:['lateral raise','lateral raises','side raise','side raises'],
+    body:'Shoulders', tip:'Lead with elbows; stop at shoulder height.', wikiLink:'https://en.wikipedia.org/wiki/Lateral_raise' },
+  { slug:'bicep-curl', imageId:'Barbell_Curl',       aliases:['bicep curl','bicep curls','biceps curl','curl','curls','hammer curl'],
+    body:'Biceps', tip:'Keep elbows fixed; control the lowering.', wikiLink:'https://en.wikipedia.org/wiki/Biceps_curl' },
+  { slug:'tricep-extension', imageId:'Triceps_Pushdown', aliases:['tricep extension','triceps extension','skull crusher','tricep dip','dip','dips'],
+    body:'Triceps', tip:'Full lockout at the bottom.', wikiLink:'https://en.wikipedia.org/wiki/Triceps_extension' },
 
   // ── CARDIO / FULL BODY ──
-  { slug:'burpee', imageId:'Freehand_Jump_Squat',
-    aliases:['burpee','burpees','burp','burps','polichinelo agachado'],
-    body:'Full body', tip:'Land softly; jump high at the top.' },
-  { slug:'jumping-jack', imageId:'Freehand_Jump_Squat',
-    aliases:['jumping jack','jumping jacks','star jump','star jumps','polichinelo','polichinelos'],
-    body:'Cardio', tip:'Land with soft knees; arms fully overhead.' },
-  { slug:'high-knee', imageId:'Front_Leg_Raises',
-    aliases:['high knee','high knees','running high knees','joelho alto','corrida joelho alto'],
-    body:'Cardio', tip:'Drive knees to hip height; pump your arms.' },
-  { slug:'jump-squat', imageId:'Freehand_Jump_Squat',
-    aliases:['jump squat','jump squats','squat jump','agachamento com salto','agachamento saltando'],
-    body:'Full body', tip:'Land softly with bent knees; absorb the impact.' },
-  { slug:'box-jump', imageId:'Freehand_Jump_Squat',
-    aliases:['box jump','box jumps','salto no caixote','salto no step'],
-    body:'Full body', tip:'Land on the whole foot; step down safely.' },
-  { slug:'jump-rope', imageId:'Freehand_Jump_Squat',
-    aliases:['jump rope','rope jump','skipping','pular corda','corda','pulo de corda'],
-    body:'Cardio', tip:'Land on the balls of your feet; keep elbows in.' },
+  { slug:'burpee', imageId:'Burpee',           aliases:['burpee','burpees','burp','burps'],
+    body:'Full body', tip:'Land softly; jump high at the top.', wikiLink:'https://en.wikipedia.org/wiki/Burpee_(exercise)' },
+  { slug:'jumping-jack', imageId:'Jumping_Jacks',     aliases:['jumping jack','jumping jacks','star jump','star jumps'],
+    body:'Cardio', tip:'Land with soft knees; arms fully overhead.', wikiLink:'https://en.wikipedia.org/wiki/Jumping_jack' },
+  { slug:'high-knee', imageId:'High_Knees',        aliases:['high knee','high knees','running high knees'],
+    body:'Cardio', tip:'Drive knees to hip height; pump your arms.', wikiLink:'https://en.wikipedia.org/wiki/High_knee' },
 
   // ── MOBILITY / STRETCHES ──
-  { slug:'figure-4-stretch', imageId:'IT_Band_and_Glute_Stretch',
-    aliases:['figure 4 stretch','figure-4','figure 4','figure four stretch','piriformis stretch','alongamento glúteo','alongamento piriforme','figura 4'],
-    body:'Mobility', tip:'Gentle pressure on the knee; breathe out.' },
-  { slug:'hip-flexor-stretch', imageId:'Intermediate_Hip_Flexor_and_Quad_Stretch',
-    aliases:['hip flexor stretch','hip flexor','hip flexors','kneeling lunge stretch','alongamento de flexor de quadril','alongamento quadril'],
-    body:'Mobility', tip:'Tuck pelvis under; feel it in the front hip.' },
-  { slug:'foam-roll', imageId:'Adductor',
-    aliases:['foam roll','foam roller','foam rolling','rolling','rolo de espuma','liberação miofascial'],
-    body:'Mobility', tip:'Pause on tight spots; breathe into them.' },
-  { slug:'cat-cow', imageId:'Cat_Stretch',
-    aliases:['cat cow','cat-cow','cat camel','gato e vaca','mobilidade coluna'],
-    body:'Mobility', tip:'Inhale to arch, exhale to round.' },
-  { slug:'child-pose', imageId:'Childs_Pose',
-    aliases:["child's pose","child pose","childs pose",'postura da criança','alongamento de criança'],
-    body:'Mobility', tip:'Arms forward or by your sides; breathe deeply.' },
-  { slug:'downward-dog', imageId:'Intermediate_Hip_Flexor_and_Quad_Stretch',
-    aliases:['downward dog','down dog','downward facing dog','cão olhando para baixo'],
-    body:'Mobility', tip:'Push heels toward the floor; straighten legs.' },
-  { slug:'pigeon-pose', imageId:'IT_Band_and_Glute_Stretch',
-    aliases:['pigeon pose','sleeping pigeon','pombo','postura do pombo','alongamento glúteo profundo'],
-    body:'Mobility', tip:'Square hips to the floor; breathe into it.' },
-  { slug:'hamstring-stretch', imageId:'Leg-Up_Hamstring_Stretch',
-    aliases:['hamstring stretch','hamstring stretches','alongamento de isquiotibiais','along posterior de coxa'],
-    body:'Mobility', tip:'Keep back flat; hinge forward from the hips.' },
-  { slug:'quad-stretch', imageId:'All_Fours_Quad_Stretch',
-    aliases:['quad stretch','quadricep stretch','alongamento de quadriceps','along coxa'],
-    body:'Mobility', tip:'Keep knees together; stand tall.' },
-  { slug:'chest-stretch', imageId:'Chest_And_Front_Of_Shoulder_Stretch',
-    aliases:['chest stretch','pec stretch','along peitoral','esticar peitoral'],
-    body:'Mobility', tip:'Open arms wide; feel it across the chest.' },
-  { slug:'shoulder-stretch', imageId:'Shoulder_Stretch',
-    aliases:['shoulder stretch','cross body stretch','along ombro'],
-    body:'Mobility', tip:'Pull arm across; keep shoulder down.' },
-  { slug:'world-greatest-stretch', imageId:'Worlds_Greatest_Stretch',
-    aliases:['world greatest stretch','worlds greatest stretch','maior alongamento do mundo'],
-    body:'Mobility', tip:'Move slowly through each position.' },
+  { slug:'figure-4-stretch', imageId:'Figure_Four_Stretch', aliases:['figure 4 stretch','figure-4','figure 4','figure four stretch','piriformis stretch'],
+    body:'Mobility', tip:'Gentle pressure on the knee; breathe out.', wikiLink:'https://en.wikipedia.org/wiki/Piriformis_muscle' },
+  { slug:'hip-flexor-stretch', imageId:'Hip_Flexor_Stretch',aliases:['hip flexor stretch','hip flexor','hip flexors','kneeling lunge stretch'],
+    body:'Mobility', tip:'Tuck pelvis under; feel it in the front hip.', wikiLink:'https://en.wikipedia.org/wiki/Hip_flexors' },
+  { slug:'foam-roll', imageId:'IT_Band_and_TFL_SMR',        aliases:['foam roll','foam roller','foam rolling','rolling'],
+    body:'Mobility', tip:'Pause on tight spots; breathe into them.', wikiLink:'https://en.wikipedia.org/wiki/Foam_roller' },
+  { slug:'cat-cow', imageId:'Cat_Stretch',          aliases:['cat cow','cat-cow','cat camel'],
+    body:'Mobility', tip:'Inhale to arch, exhale to round.', wikiLink:'https://en.wikipedia.org/wiki/Cat%E2%80%93cow_pose' },
+  { slug:'child-pose', imageId:'Child_Pose',       aliases:["child's pose","child pose","childs pose"],
+    body:'Mobility', tip:'Arms forward or by your sides; breathe deeply.', wikiLink:'https://en.wikipedia.org/wiki/Child%27s_pose' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -520,11 +353,6 @@ function parseText(text) {
     // Strip bullet chars
     const clean = seg.replace(/^[\*\-•·▪▸►\d+\.\)]+\s*/, '').trim();
     if (!clean || /^(note|tip|rest|remember|make sure|perform|complete)/i.test(clean)) continue;
-
-    // Skip pure equipment words
-    const _equip = /^(dumbbells?|barbells?|kettlebells?|resistance bands?|foam roller|mat|cable|machine|weight|weights|band|bands|rope|bar|rack|plates?|belt|gloves|halteres?|elástico|barra)$/i;
-    const _stripped = clean.replace(/^\d+\s*/, '').replace(/[×xX]\s*[\d\-–]+.*$/, '').trim();
-    if (_equip.test(_stripped)) continue;
 
     // Extract numbers + prescription FIRST
     // Patterns: "3×15", "3x15", "3 x 15", "2x30s", "3x30-45s", standalone "30s"
@@ -585,7 +413,7 @@ const IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/mai
 
 function imgPath(imageId) {
   if (!imageId) return null;
-  return IMG_BASE + imageId + '/0.jpg?t=' + Date.now();
+  return IMG_BASE + imageId + '/0.jpg';
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -616,13 +444,13 @@ function renderCard(item, i) {
     ? '' // exact first alias — no need to show matched name
     : `<div class="card-matched">→ matched as <strong style="color:var(--text)">${escHtml(ex.aliases[0])}</strong></div>`;
 
-    const imgSrc = imgPath(ex.imageId);
+  // Image: try GIF, fallback to placeholder with wiki link
+  const imgSrc = imgPath(ex.imageId);
+  const fallback = `this.onerror=null;this.parentNode.innerHTML='<div class=\\"img-placeholder\\"><div class=\\"icon\\">🏋️</div><span>${escHtml(ex.aliases[0])}</span><a href=\\"${escHtml(ex.wikiLink)}\\" target=\\"_blank\\">View on Wikipedia →</a></div>'`;
 
   card.innerHTML = `
-    <div class="card-image-wrap" id="imgwrap-${i}">
-      <img id="cardimg-${i}" src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}"
-        data-name="${escHtml(ex.aliases[0])}"
-        onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'img-placeholder\'><div class=\'icon\'>🏋️</div><span>'+this.dataset.name+'</span></div>'">
+    <div class="card-image-wrap">
+      <img src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}" onerror="${fallback}">
       ${matchBadge(score)}
     </div>
     <div class="card-body">
@@ -662,8 +490,8 @@ function resetTool() {
   document.getElementById('charCount').textContent = '0 characters';
   exerciseGrid.innerHTML = '';
   document.getElementById('unmatchedSection').innerHTML = '';
-  if (window._animIntervals) window._animIntervals.forEach(clearInterval);
-  window._animIntervals = [];
+  // Kill all previous animation intervals
+  if (window._animIntervals) { window._animIntervals.forEach(clearInterval); window._animIntervals = []; }
   summaryStrip.className = 'summary-strip';
   sessionFooter.className = 'session-footer';
   statusBar.className = 'status-bar';
@@ -678,8 +506,8 @@ function run() {
   parseBtn.disabled = true;
   exerciseGrid.innerHTML = '';
   document.getElementById('unmatchedSection').innerHTML = '';
-  if (window._animIntervals) window._animIntervals.forEach(clearInterval);
-  window._animIntervals = [];
+  // Kill all previous animation intervals
+  if (window._animIntervals) { window._animIntervals.forEach(clearInterval); window._animIntervals = []; }
   summaryStrip.className = 'summary-strip';
   sessionFooter.className = 'session-footer';
   setStatus('Parsing…', 'info', true);
@@ -707,6 +535,26 @@ function run() {
 
     matched.forEach((item, i) => renderCard(item, i));
 
+    // Animate: toggle /0.jpg ↔ /1.jpg; session-stamped to prevent cross-parse bleed
+    if (!window._animIntervals) window._animIntervals = [];
+    const _ts = Date.now();
+    matched.forEach((item, i) => {
+      if (!item.ex.imageId) return;
+      const src0 = IMG_BASE + item.ex.imageId + '/0.jpg?t=' + _ts;
+      const src1 = IMG_BASE + item.ex.imageId + '/1.jpg?t=' + _ts;
+      const imgEl = document.getElementById('cardimg-' + i);
+      if (!imgEl) return;
+      imgEl.dataset.session = _ts;
+      let frame = 0;
+      const iv = setInterval(() => {
+        const el = document.getElementById('cardimg-' + i);
+        if (!el || el.dataset.session != _ts) { clearInterval(iv); return; }
+        frame = 1 - frame;
+        el.src = frame === 1 ? src1 : src0;
+      }, 900);
+      window._animIntervals.push(iv);
+    });
+
     // Unmatched section
     if (unmatched.length) {
       document.getElementById('unmatchedSection').innerHTML = `
@@ -720,18 +568,7 @@ function run() {
       setStatus(`Done — ${matched.length} exercise${matched.length>1?'s':''} parsed${unmatched.length?' ('+unmatched.length+' unrecognised)':''}.`, 'success', false);
       sessionFooter.className = 'session-footer active';
       // Animate: toggle between frame 0 and frame 1 every 900ms
-      matched.forEach((item, i) => {
-        if (!item.ex.imageId) return;
-        const src0 = IMG_BASE + item.ex.imageId + '/0.jpg';
-        const src1 = IMG_BASE + item.ex.imageId + '/1.jpg';
-        let frame = 0;
-        setInterval(() => {
-          const img = document.getElementById('cardimg-' + i);
-          if (!img) return;
-          frame = 1 - frame;
-          img.src = frame === 1 ? src1 : src0;
-        }, 900);
-      });
+
     } else {
       setStatus('No exercises matched. Check spelling or add to the dictionary.', 'error', false);
     }
