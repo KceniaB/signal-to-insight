@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualize Your Exercise 🏋️ · Signal to Insight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- Fuse.js for fuzzy matching -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js"></script>
+<style>
+  :root{--bg:#0d1117;--surface:#161b22;--border:#21262d;--border2:#30363d;
+    --text:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;
+    --red:#f78166;--purple:#d2a8ff;--orange:#ffa657}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;
+    line-height:1.6;padding:40px 20px 80px;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:0;opacity:0.35}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:60px 60px;pointer-events:none;z-index:0;opacity:0.3}
+  .container{max-width:960px;margin:0 auto;position:relative;z-index:1}
+
+  .header{text-align:center;margin-bottom:48px}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--green);
+    letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px}
+  h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;
+    background:linear-gradient(135deg,var(--green) 0%,var(--blue) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;margin-bottom:12px;line-height:1.15}
+  .header p{color:var(--muted);font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;max-width:580px;margin:0 auto;line-height:1.7}
+
+  .input-section{background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:28px;margin-bottom:32px}
+  .input-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;
+    margin-bottom:10px;display:block}
+  textarea{width:100%;min-height:160px;background:var(--bg);
+    border:1px solid var(--border2);border-radius:8px;color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+    padding:14px 16px;resize:vertical;outline:none;
+    transition:border-color 0.2s;line-height:1.7}
+  textarea:focus{border-color:var(--green)}
+  textarea::placeholder{color:var(--muted);opacity:0.6}
+  .input-meta{display:flex;align-items:center;justify-content:space-between;
+    margin-top:14px;flex-wrap:wrap;gap:12px}
+  .char-count{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted)}
+  .btn-parse{background:linear-gradient(135deg,var(--green),#2ea043);color:#0d1117;
+    border:none;border-radius:8px;padding:10px 28px;font-family:'Syne',sans-serif;
+    font-weight:700;font-size:0.9rem;cursor:pointer;
+    transition:opacity 0.2s,transform 0.1s;letter-spacing:0.03em}
+  .btn-parse:hover{opacity:0.88;transform:translateY(-1px)}
+  .btn-parse:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+
+  .status-bar{display:none;align-items:center;gap:10px;padding:12px 18px;
+    background:var(--surface);border:1px solid var(--border);
+    border-left:3px solid var(--blue);border-radius:8px;margin-bottom:28px;
+    font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--blue)}
+  .status-bar.active{display:flex}
+  .status-bar.error{border-left-color:var(--red);color:var(--red)}
+  .status-bar.success{border-left-color:var(--green);color:var(--green)}
+  .spinner{width:14px;height:14px;border:2px solid var(--border2);
+    border-top-color:currentColor;border-radius:50%;
+    animation:spin 0.7s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .summary-strip{display:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:16px 22px;margin-bottom:28px;gap:32px;flex-wrap:wrap}
+  .summary-strip.active{display:flex}
+  .stat-block{display:flex;flex-direction:column}
+  .stat-value{font-family:'JetBrains Mono',monospace;font-size:1.5rem;
+    font-weight:600;color:var(--green);line-height:1}
+  .stat-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+
+  .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+  .exercise-card{background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;
+    display:flex;flex-direction:column}
+  .exercise-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+
+  .card-image-wrap{position:relative;width:100%;aspect-ratio:4/3;
+    background:var(--bg);overflow:hidden;
+    display:flex;align-items:center;justify-content:center}
+  .card-image-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* Fuzzy match confidence badge on image */
+  .match-badge{position:absolute;top:8px;right:8px;
+    font-family:'JetBrains Mono',monospace;font-size:0.6rem;
+    padding:2px 7px;border-radius:20px;letter-spacing:0.05em}
+  .match-exact{background:rgba(63,185,80,0.2);color:var(--green);border:1px solid rgba(63,185,80,0.4)}
+  .match-close{background:rgba(255,166,87,0.2);color:var(--orange);border:1px solid rgba(255,166,87,0.4)}
+  .match-fuzzy{background:rgba(247,129,102,0.2);color:var(--red);border:1px solid rgba(247,129,102,0.4)}
+
+  .img-placeholder{display:flex;flex-direction:column;align-items:center;
+    gap:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;text-align:center;padding:20px;width:100%}
+  .img-placeholder .icon{font-size:2.5rem;opacity:0.4}
+  .img-placeholder a{color:var(--blue);font-size:0.65rem;text-decoration:none;
+    border:1px solid rgba(88,166,255,0.3);padding:3px 10px;border-radius:20px;
+    transition:background 0.2s}
+  .img-placeholder a:hover{background:rgba(88,166,255,0.1)}
+
+  .card-body{padding:18px 18px 16px;flex:1;display:flex;flex-direction:column}
+  .card-index{font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+    color:var(--green);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px}
+  .card-name{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.3}
+  .card-matched{font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+    color:var(--muted);margin-bottom:10px}
+  .card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+    padding:3px 9px;border-radius:20px;border:1px solid}
+  .tag-sets{color:var(--blue);border-color:rgba(88,166,255,0.3);background:rgba(88,166,255,0.08)}
+  .tag-reps{color:var(--orange);border-color:rgba(255,166,87,0.3);background:rgba(255,166,87,0.08)}
+  .tag-time{color:var(--purple);border-color:rgba(210,168,255,0.3);background:rgba(210,168,255,0.08)}
+  .tag-body{color:var(--green);border-color:rgba(63,185,80,0.3);background:rgba(63,185,80,0.08)}
+  .card-tip{font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    color:var(--muted);line-height:1.6;margin-top:auto;
+    padding-top:10px;border-top:1px solid var(--border)}
+
+  .unmatched-section{margin-top:28px;padding:18px 22px;
+    background:var(--surface);border:1px solid var(--border);
+    border-left:3px solid var(--orange);border-radius:10px}
+  .unmatched-section h3{font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+    color:var(--orange);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px}
+  .unmatched-section ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+  .unmatched-section li{font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+    color:var(--muted);background:var(--bg);padding:4px 12px;
+    border-radius:20px;border:1px solid var(--border2)}
+
+  .session-footer{display:none;margin-top:36px;padding:20px 24px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;text-align:center}
+  .session-footer.active{display:block}
+  .session-footer p{font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+    color:var(--muted);margin-bottom:14px}
+  .btn-reset{background:transparent;border:1px solid var(--border2);color:var(--muted);
+    border-radius:8px;padding:8px 22px;font-family:'Syne',sans-serif;
+    font-size:0.85rem;cursor:pointer;transition:border-color 0.2s,color 0.2s}
+  .btn-reset:hover{border-color:var(--text);color:var(--text)}
+
+  .gif-note{background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:18px 22px;margin-bottom:32px;
+    font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);
+    line-height:1.8}
+  .gif-note strong{color:var(--text)}
+  .gif-note code{background:var(--bg);padding:1px 6px;border-radius:4px;
+    color:var(--green);font-size:0.72rem}
+
+  .footer-note{text-align:center;margin-top:60px;font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;color:var(--muted);opacity:0.5}
+  .footer-note a{color:var(--blue);text-decoration:none}
+  @media(max-width:600px){.exercise-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="eyebrow">Signal to Insight · Exercise Tool</div>
+    <h1>Visualize Your Exercise 🏋️</h1>
+    <p>Paste your recommended exercises.<br>
+    Fuzzy matching identifies exercises, shows GIFs, tags sets & reps.</p>
+  </div>
+
+  <div class="input-section">
+    <span class="input-label">Paste your exercise list or chat text</span>
+    <textarea id="chatInput" placeholder="Handles typos and informal text, e.g.:
+
+20 squats, 10 lujges and 5 burpes
+* Glute bridges — 3×15
+- Clamshels 3x15
+Side planks 2x30s
+Lateral band walks — 2×10–15 steps each way"></textarea>
+    <div class="input-meta">
+      <span class="char-count" id="charCount">0 characters</span>
+      <button class="btn-parse" id="parseBtn" onclick="run()">Parse Workout →</button>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner"></div>
+    <span id="statusText"></span>
+  </div>
+
+  <div class="summary-strip" id="summaryStrip">
+    <div class="stat-block"><span class="stat-value" id="statCount">—</span><span class="stat-label">Exercises</span></div>
+    <div class="stat-block"><span class="stat-value" id="statSets">—</span><span class="stat-label">Total Sets</span></div>
+    <div class="stat-block"><span class="stat-value" id="statFocus">—</span><span class="stat-label">Focus Area</span></div>
+    <div class="stat-block"><span class="stat-value" id="statTime">~—</span><span class="stat-label">Est. Duration</span></div>
+  </div>
+
+  <div class="exercise-grid" id="exerciseGrid"></div>
+  <div id="unmatchedSection"></div>
+
+  <div class="session-footer" id="sessionFooter">
+    <p>Session built. Good luck with the workout.</p>
+    <button class="btn-reset" onclick="resetTool()">← Parse another</button>
+  </div>
+
+  <div class="footer-note">
+    Part of <a href="https://kceniab.github.io/signal-to-insight/" target="_blank">Signal to Insight</a>
+    · Fuzzy matching via Fuse.js · Images: free-exercise-db (public domain)
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// EXERCISE DICTIONARY
+// slug      = filename in exercises/gifs/ (without .gif)
+// aliases   = all the ways someone might write this exercise
+// body      = muscle group
+// tip       = coaching cue
+// wikiLink  = shown when no GIF is found yet
+// ═══════════════════════════════════════════════════════════════════════
+const EXERCISES = [
+  // ── GLUTES / HIPS ──
+  { slug:'glute-bridge', imageId:'Glute_Bridge',     aliases:['glute bridge','glute bridges','hip bridge','bridges'],
+    body:'Glutes', tip:'Squeeze at the top, hold 1 s.', wikiLink:'https://en.wikipedia.org/wiki/Glute_bridge' },
+  { slug:'hip-thrust', imageId:'Barbell_Hip_Thrust',       aliases:['hip thrust','hip thrusts','barbell hip thrust'],
+    body:'Glutes', tip:'Drive through your heels, not your toes.', wikiLink:'https://en.wikipedia.org/wiki/Hip_thrust' },
+  { slug:'clamshell', imageId:'Clamshell',        aliases:['clamshell','clamshells','clam shell','clam'],
+    body:'Glutes', tip:'Keep hips stacked; only the top knee moves.', wikiLink:'https://en.wikipedia.org/wiki/Clamshell_(exercise)' },
+  { slug:'donkey-kick', imageId:'Donkey_Kick',      aliases:['donkey kick','donkey kicks','quadruped hip extension'],
+    body:'Glutes', tip:'Keep hips square to the floor.', wikiLink:'https://en.wikipedia.org/wiki/Donkey_kick' },
+  { slug:'fire-hydrant', imageId:'Fire_Hydrant',     aliases:['fire hydrant','fire hydrants'],
+    body:'Glutes', tip:'Slow and controlled; avoid hip rotation.', wikiLink:'https://en.wikipedia.org/wiki/Fire_hydrant_(exercise)' },
+  { slug:'lateral-band-walk', imageId:'Band_Hip_Abduction',aliases:['lateral band walk','lateral band walks','band walk','side band walk','monster walk'],
+    body:'Hip abductors', tip:'Keep tension in the band throughout.', wikiLink:'https://en.wikipedia.org/wiki/Resistance_band' },
+
+  // ── CORE ──
+  { slug:'plank', imageId:'Plank',            aliases:['plank','planks','front plank'],
+    body:'Core', tip:'Squeeze glutes and brace your abs.', wikiLink:'https://en.wikipedia.org/wiki/Plank_(exercise)' },
+  { slug:'side-plank', imageId:'Side_Plank',       aliases:['side plank','side planks','lateral plank'],
+    body:'Core', tip:'Stack hips; keep body in a straight line.', wikiLink:'https://en.wikipedia.org/wiki/Side_plank' },
+  { slug:'crunch', imageId:'Crunch',           aliases:['crunch','crunches','ab crunch'],
+    body:'Core', tip:'Exhale on the way up; don\'t pull your neck.', wikiLink:'https://en.wikipedia.org/wiki/Crunch_(exercise)' },
+  { slug:'sit-up', imageId:'3_4_Sit-Up',           aliases:['sit up','sit-up','sit ups','situp','situps'],
+    body:'Core', tip:'Engage core from the start; control the descent.', wikiLink:'https://en.wikipedia.org/wiki/Sit-up' },
+  { slug:'dead-bug', imageId:'Dead_Bug',         aliases:['dead bug','dead bugs','dead-bug'],
+    body:'Core', tip:'Keep your lower back pressed to the floor.', wikiLink:'https://en.wikipedia.org/wiki/Core_stability' },
+  { slug:'bird-dog', imageId:'Bird_Dog',         aliases:['bird dog','bird-dog','bird dogs'],
+    body:'Core', tip:'Move opposite arm and leg; pause at extension.', wikiLink:'https://en.wikipedia.org/wiki/Bird_dog_(exercise)' },
+  { slug:'hollow-body-hold', imageId:'Hollow_Body_Hold', aliases:['hollow body','hollow hold','hollow body hold'],
+    body:'Core', tip:'Lower back flat to floor; arms and legs low.', wikiLink:'https://en.wikipedia.org/wiki/Hollow_body_hold' },
+  { slug:'mountain-climber', imageId:'Mountain_Climber', aliases:['mountain climber','mountain climbers','mountain-climbers'],
+    body:'Core', tip:'Hips level; drive knees fast for cardio effect.', wikiLink:'https://en.wikipedia.org/wiki/Mountain_climber_(exercise)' },
+
+  // ── LEGS ──
+  { slug:'squat', imageId:'Bodyweight_Squat',            aliases:['squat','squats','bodyweight squat','air squat'],
+    body:'Quads', tip:'Chest up, knees tracking over toes.', wikiLink:'https://en.wikipedia.org/wiki/Squat_(exercise)' },
+  { slug:'lunge', imageId:'Lunge',            aliases:['lunge','lunges','walking lunge','forward lunge'],
+    body:'Quads', tip:'Back knee hovers 2 cm above the floor.', wikiLink:'https://en.wikipedia.org/wiki/Lunge_(exercise)' },
+  { slug:'reverse-lunge', imageId:'Reverse_Lunge',    aliases:['reverse lunge','reverse lunges','step back lunge'],
+    body:'Quads', tip:'Step back, not sideways; torso upright.', wikiLink:'https://en.wikipedia.org/wiki/Lunge_(exercise)' },
+  { slug:'step-up', imageId:'Barbell_Step_Ups',          aliases:['step up','step ups','step-up','box step up'],
+    body:'Quads', tip:'Push through your front heel to stand.', wikiLink:'https://en.wikipedia.org/wiki/Step_up_(exercise)' },
+  { slug:'wall-sit', imageId:'Wall_Squat',         aliases:['wall sit','wall sits','wall squat'],
+    body:'Quads', tip:'Thighs parallel to the floor; back flat.', wikiLink:'https://en.wikipedia.org/wiki/Wall_sit' },
+  { slug:'deadlift', imageId:'Deadlift',         aliases:['deadlift','deadlifts','rdl','romanian deadlift','stiff leg deadlift'],
+    body:'Hamstrings', tip:'Hinge at the hip; bar stays close to legs.', wikiLink:'https://en.wikipedia.org/wiki/Deadlift' },
+  { slug:'nordic-curl', imageId:'Nordic_Curl',      aliases:['nordic curl','nordic curls','nordic hamstring','hamstring curl'],
+    body:'Hamstrings', tip:'Resist the fall as long as possible.', wikiLink:'https://en.wikipedia.org/wiki/Nordic_curl' },
+  { slug:'calf-raise', imageId:'Standing_Calf_Raises',       aliases:['calf raise','calf raises','heel raise','heel raises'],
+    body:'Calves', tip:'Full range — all the way up and down.', wikiLink:'https://en.wikipedia.org/wiki/Calf_raise' },
+
+  // ── UPPER BODY ──
+  { slug:'push-up', imageId:'Push-Up',          aliases:['push up','push-up','pushup','push ups','pushups'],
+    body:'Chest', tip:'Body in a straight line from head to heel.', wikiLink:'https://en.wikipedia.org/wiki/Push-up' },
+  { slug:'bench-press', imageId:'Barbell_Bench_Press_-_Medium_Grip',      aliases:['bench press','chest press','flat bench'],
+    body:'Chest', tip:'Retract shoulder blades before pressing.', wikiLink:'https://en.wikipedia.org/wiki/Bench_press' },
+  { slug:'pull-up', imageId:'Pull-Up',          aliases:['pull up','pull-up','pullup','pull ups','pullups','chin up','chin-up','chinup'],
+    body:'Back', tip:'Dead hang start; lead with your elbows.', wikiLink:'https://en.wikipedia.org/wiki/Pull-up_(exercise)' },
+  { slug:'bent-over-row', imageId:'Bent_Over_Barbell_Row',    aliases:['row','rows','bent over row','dumbbell row','db row','barbell row'],
+    body:'Back', tip:'Keep back flat; pull to your hip, not chest.', wikiLink:'https://en.wikipedia.org/wiki/Bent-over_row' },
+  { slug:'lat-pulldown', imageId:'Wide-Grip_Lat_Pulldown',     aliases:['lat pulldown','lat pull down','pulldown'],
+    body:'Back', tip:'Lean back slightly; pull bar to upper chest.', wikiLink:'https://en.wikipedia.org/wiki/Lat_pulldown' },
+  { slug:'shoulder-press', imageId:'Seated_Dumbbell_Shoulder_Press',   aliases:['shoulder press','overhead press','ohp','military press','dumbbell press'],
+    body:'Shoulders', tip:'Avoid arching the lower back at the top.', wikiLink:'https://en.wikipedia.org/wiki/Overhead_press' },
+  { slug:'lateral-raise', imageId:'Side_Lateral_Raise',    aliases:['lateral raise','lateral raises','side raise','side raises'],
+    body:'Shoulders', tip:'Lead with elbows; stop at shoulder height.', wikiLink:'https://en.wikipedia.org/wiki/Lateral_raise' },
+  { slug:'bicep-curl', imageId:'Barbell_Curl',       aliases:['bicep curl','bicep curls','biceps curl','curl','curls','hammer curl'],
+    body:'Biceps', tip:'Keep elbows fixed; control the lowering.', wikiLink:'https://en.wikipedia.org/wiki/Biceps_curl' },
+  { slug:'tricep-extension', imageId:'Triceps_Pushdown', aliases:['tricep extension','triceps extension','skull crusher','tricep dip','dip','dips'],
+    body:'Triceps', tip:'Full lockout at the bottom.', wikiLink:'https://en.wikipedia.org/wiki/Triceps_extension' },
+
+  // ── CARDIO / FULL BODY ──
+  { slug:'burpee', imageId:'Burpee',           aliases:['burpee','burpees','burp','burps'],
+    body:'Full body', tip:'Land softly; jump high at the top.', wikiLink:'https://en.wikipedia.org/wiki/Burpee_(exercise)' },
+  { slug:'jumping-jack', imageId:'Jumping_Jacks',     aliases:['jumping jack','jumping jacks','star jump','star jumps'],
+    body:'Cardio', tip:'Land with soft knees; arms fully overhead.', wikiLink:'https://en.wikipedia.org/wiki/Jumping_jack' },
+  { slug:'high-knee', imageId:'High_Knees',        aliases:['high knee','high knees','running high knees'],
+    body:'Cardio', tip:'Drive knees to hip height; pump your arms.', wikiLink:'https://en.wikipedia.org/wiki/High_knee' },
+
+  // ── MOBILITY / STRETCHES ──
+  { slug:'figure-4-stretch', imageId:'Figure_Four_Stretch', aliases:['figure 4 stretch','figure-4','figure 4','figure four stretch','piriformis stretch'],
+    body:'Mobility', tip:'Gentle pressure on the knee; breathe out.', wikiLink:'https://en.wikipedia.org/wiki/Piriformis_muscle' },
+  { slug:'hip-flexor-stretch', imageId:'Hip_Flexor_Stretch',aliases:['hip flexor stretch','hip flexor','hip flexors','kneeling lunge stretch'],
+    body:'Mobility', tip:'Tuck pelvis under; feel it in the front hip.', wikiLink:'https://en.wikipedia.org/wiki/Hip_flexors' },
+  { slug:'foam-roll', imageId:'IT_Band_and_TFL_SMR',        aliases:['foam roll','foam roller','foam rolling','rolling'],
+    body:'Mobility', tip:'Pause on tight spots; breathe into them.', wikiLink:'https://en.wikipedia.org/wiki/Foam_roller' },
+  { slug:'cat-cow', imageId:'Cat_Stretch',          aliases:['cat cow','cat-cow','cat camel'],
+    body:'Mobility', tip:'Inhale to arch, exhale to round.', wikiLink:'https://en.wikipedia.org/wiki/Cat%E2%80%93cow_pose' },
+  { slug:'child-pose', imageId:'Child_Pose',       aliases:["child's pose","child pose","childs pose"],
+    body:'Mobility', tip:'Arms forward or by your sides; breathe deeply.', wikiLink:'https://en.wikipedia.org/wiki/Child%27s_pose' },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// BUILD FUSE.JS SEARCH INDEX
+// ═══════════════════════════════════════════════════════════════════════
+// Flatten aliases so Fuse can search them
+const SEARCH_ITEMS = [];
+EXERCISES.forEach(ex => {
+  ex.aliases.forEach(alias => {
+    SEARCH_ITEMS.push({ alias, slug: ex.slug });
+  });
+});
+
+const fuse = new Fuse(SEARCH_ITEMS, {
+  keys: ['alias'],
+  threshold: 0.45,       // 0=exact, 1=anything. 0.45 = catches common typos
+  distance: 100,
+  includeScore: true,
+});
+
+function fuzzyMatch(query) {
+  const results = fuse.search(query.toLowerCase().trim());
+  if (!results.length) return null;
+  const best = results[0];
+  const ex = EXERCISES.find(e => e.slug === best.item.slug);
+  const score = best.score; // 0=perfect, 1=worst
+  return { ex, score };
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PARSE RAW TEXT
+// ═══════════════════════════════════════════════════════════════════════
+function parseText(text) {
+  // Split on commas OR newlines to handle both "20 squats, 10 lunges" and line-by-line
+  const segments = text
+    .split(/\n|,(?=\s*\d|\s*[a-zA-Z])/)
+    .map(s => s.trim())
+    .filter(s => s.length > 2);
+
+  const matched   = [];
+  const unmatched = [];
+
+  for (const seg of segments) {
+    // Strip bullet chars
+    const clean = seg.replace(/^[\*\-•·▪▸►\d+\.\)]+\s*/, '').trim();
+    if (!clean || /^(note|tip|rest|remember|make sure|perform|complete)/i.test(clean)) continue;
+
+    // Extract numbers + prescription FIRST
+    // Patterns: "3×15", "3x15", "3 x 15", "2x30s", "3x30-45s", standalone "30s"
+    let sets = null, reps = null, duration = null;
+    const setsTime = clean.match(/(\d+)\s*[×xX]\s*([\d\-–]+\s*(?:s|sec|min|seconds?|minutes?))/i);
+    const setsReps = clean.match(/(\d+)\s*[×xX]\s*([\d\-–]+)(?:\s*(?:reps?|steps?|each\s*way)?)?/i);
+    const standaloneNum = clean.match(/(\d+)\s*(?:reps?)?(?:\s|$)/i);
+    const standaloneTime = clean.match(/([\d\-–]+\s*(?:s|sec|min))/i);
+
+    if (setsTime) {
+      sets = setsTime[1];
+      duration = setsTime[2].trim();
+    } else if (setsReps) {
+      sets = setsReps[1];
+      reps = setsReps[2].trim();
+    } else if (standaloneTime) {
+      duration = standaloneTime[1].trim();
+    } else if (standaloneNum) {
+      reps = standaloneNum[1];
+    }
+
+    // Remove numbers to get the exercise name
+    const nameRaw = clean
+      .replace(/[\d\-–]+\s*[×xX]\s*[\d\-–]+\s*(?:s|sec|min|reps?|steps?|each\s*way)?/gi, '')
+      .replace(/[\d\-–]+\s*(?:s|sec|min|reps?|steps?|each\s*way)/gi, '')
+      .replace(/^[\d]+\s*/, '')
+      .replace(/[—–\-:]\s*$/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!nameRaw || nameRaw.length < 2) continue;
+
+    // Fuzzy match
+    const match = fuzzyMatch(nameRaw);
+
+    if (!match || match.score > 0.6) {
+      unmatched.push(nameRaw);
+      continue;
+    }
+
+    matched.push({
+      rawName:   nameRaw,
+      ex:        match.ex,
+      score:     match.score,
+      sets, reps, duration,
+    });
+  }
+
+  return { matched, unmatched };
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// IMAGE SOURCE — free-exercise-db (public domain)
+// https://github.com/yuhonas/free-exercise-db
+// Each exercise has an imageId matching the folder name in that repo
+// ═══════════════════════════════════════════════════════════════════════
+const IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+
+function imgPath(imageId) {
+  if (!imageId) return null;
+  return IMG_BASE + imageId + '/0.jpg';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function matchBadge(score) {
+  if (score < 0.05) return '<span class="match-badge match-exact">exact</span>';
+  if (score < 0.25) return '<span class="match-badge match-close">close</span>';
+  return '<span class="match-badge match-fuzzy">fuzzy</span>';
+}
+
+// session ID — changes every parse, encoded into card element IDs
+// so old setInterval timers can never find cards from a new parse
+let _SID = 0;
+
+function renderCard(item, i) {
+  const { ex, rawName, score, sets, reps, duration } = item;
+  const card = document.createElement('div');
+  card.className = 'exercise-card';
+
+  const tags = [];
+  if (sets)     tags.push(`<span class="tag tag-sets">${escHtml(sets)} sets</span>`);
+  if (reps)     tags.push(`<span class="tag tag-reps">${escHtml(reps)} reps</span>`);
+  if (duration) tags.push(`<span class="tag tag-time">${escHtml(duration)}</span>`);
+  if (ex.body)  tags.push(`<span class="tag tag-body">${escHtml(ex.body)}</span>`);
+
+  const nameLabel = rawName.toLowerCase() === ex.aliases[0].toLowerCase()
+    ? ''
+    : `<div class="card-matched">→ matched as <strong style="color:var(--text)">${escHtml(ex.aliases[0])}</strong></div>`;
+
+  const imgSrc = imgPath(ex.imageId);
+  const cardId = 'cardimg-' + _SID + '-' + i;  // session-unique ID
+
+  card.innerHTML = `
+    <div class="card-image-wrap" id="imgwrap-${_SID}-${i}">
+      <img id="${cardId}" src="${escHtml(imgSrc)}" alt="${escHtml(ex.aliases[0])}"
+        data-name="${escHtml(ex.aliases[0])}"
+        onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'img-placeholder\'><div class=\'icon\'>🏋️</div><span>'+this.dataset.name+'</span></div>'">
+      ${matchBadge(score)}
+    </div>
+    <div class="card-body">
+      <div class="card-index">EX ${String(i+1).padStart(2,'0')}</div>
+      <div class="card-name">${escHtml(rawName)}</div>
+      ${nameLabel}
+      <div class="card-tags">${tags.join('')}</div>
+      <div class="card-tip">${escHtml(ex.tip)}</div>
+    </div>`;
+  document.getElementById('exerciseGrid').appendChild(card);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════════════════════════════════
+const textarea = document.getElementById('chatInput');
+const parseBtn = document.getElementById('parseBtn');
+const statusBar = document.getElementById('statusBar');
+const statusText = document.getElementById('statusText');
+const summaryStrip = document.getElementById('summaryStrip');
+const exerciseGrid = document.getElementById('exerciseGrid');
+const sessionFooter = document.getElementById('sessionFooter');
+
+textarea.addEventListener('input', () => {
+  document.getElementById('charCount').textContent = textarea.value.length + ' characters';
+});
+
+function setStatus(msg, type='info', spin=true) {
+  const s = document.querySelector('.status-bar .spinner');
+  statusBar.className = 'status-bar active' + (type==='error'?' error':type==='success'?' success':'');
+  if(s) s.style.display = spin ? 'block' : 'none';
+  statusText.textContent = msg;
+}
+
+function resetTool() {
+  textarea.value = '';
+  document.getElementById('charCount').textContent = '0 characters';
+  exerciseGrid.innerHTML = '';
+  document.getElementById('unmatchedSection').innerHTML = '';
+  summaryStrip.className = 'summary-strip';
+  sessionFooter.className = 'session-footer';
+  statusBar.className = 'status-bar';
+  parseBtn.disabled = false;
+  textarea.focus();
+}
+
+function run() {
+  const raw = textarea.value.trim();
+  if (!raw) { setStatus('Please paste some exercise text first.', 'error', false); return; }
+
+  parseBtn.disabled = true;
+  exerciseGrid.innerHTML = '';
+  document.getElementById('unmatchedSection').innerHTML = '';
+  summaryStrip.className = 'summary-strip';
+  sessionFooter.className = 'session-footer';
+  setStatus('Parsing…', 'info', true);
+
+  // Small timeout so the UI updates before the (synchronous) parse
+  setTimeout(() => {
+    const { matched, unmatched } = parseText(raw);
+
+    if (!matched.length && !unmatched.length) {
+      setStatus('No exercises found. Try one per line.', 'error', false);
+      parseBtn.disabled = false;
+      return;
+    }
+
+    // Summary
+    const totalSets = matched.reduce((s,m) => s + (parseInt(m.sets)||0), 0);
+    const areas = [...new Set(matched.map(m=>m.ex.body))];
+    const focus = areas.length > 2 ? areas.slice(0,2).join(' / ')+'…' : areas.join(' / ') || '—';
+    const estMin = Math.max(5, Math.round(totalSets * 1.5));
+    document.getElementById('statCount').textContent = matched.length;
+    document.getElementById('statSets').textContent  = totalSets || '—';
+    document.getElementById('statFocus').textContent = focus;
+    document.getElementById('statTime').textContent  = '~'+estMin+' min';
+    summaryStrip.className = 'summary-strip active';
+
+    _SID++;  // new session = new card IDs = old timers self-destruct
+    matched.forEach((item, i) => renderCard(item, i));
+
+    // Unmatched section
+    if (unmatched.length) {
+      document.getElementById('unmatchedSection').innerHTML = `
+        <div class="unmatched-section">
+          <h3>⚠ Not recognised (${unmatched.length})</h3>
+          <ul>${unmatched.map(u=>`<li>${escHtml(u)}</li>`).join('')}</ul>
+        </div>`;
+    }
+
+    if (matched.length) {
+      setStatus(`Done — ${matched.length} exercise${matched.length>1?'s':''} parsed${unmatched.length?' ('+unmatched.length+' unrecognised)':''}.`, 'success', false);
+      sessionFooter.className = 'session-footer active';
+      // Animate: session-unique IDs prevent cross-parse bleed
+      const sid = _SID;  // capture current session
+      matched.forEach((item, i) => {
+        if (!item.ex.imageId) return;
+        const src0 = IMG_BASE + item.ex.imageId + '/0.jpg';
+        const src1 = IMG_BASE + item.ex.imageId + '/1.jpg';
+        const cardId = 'cardimg-' + sid + '-' + i;
+        let frame = 0;
+        const iv = setInterval(() => {
+          const img = document.getElementById(cardId);
+          if (!img) { clearInterval(iv); return; }  // card gone = stop
+          frame = 1 - frame;
+          img.src = frame === 1 ? src1 : src0;
+        }, 900);
+      });
+    } else {
+      setStatus('No exercises matched. Check spelling or add to the dictionary.', 'error', false);
+    }
+
+    parseBtn.disabled = false;
+  }, 50);
+}
+</script>
+</body>
+</html>
