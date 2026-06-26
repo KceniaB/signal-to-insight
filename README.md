@@ -43,6 +43,7 @@ pip install groq sentence-transformers==2.7.0 transformers==4.40.0 "numpy<2" net
 
 - **Running Training Planner** — pace zones, weekly load, taper planning, 400m lap times calculator
 - **From Beat to Pace** — music BPM to running cadence matcher
+- **Visualize Your Exercise 🏋️** — browse 100+ exercises by muscle group or paste any workout list; live fuzzy matching, animated demos, English & Portuguese support. Built with [Claude](https://claude.ai) · Images: [free-exercise-db](https://github.com/yuhonas/free-exercise-db)
 
 
 ---
