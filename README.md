@@ -1,81 +1,76 @@
-# Signal to Insight
+# 09 — Expected Goals (xG) Model: World Cup 2022
 
-**Portfolio:** https://kceniab.github.io/signal-to-insight/
+**Sports Analytics · Machine Learning · Spatial Data**
 
-Data science portfolio exploring biosignals, wearable devices, sports performance, and AI. 
+A shot-quality model trained on full event and 360 freeze-frame data from the FIFA World
+Cup 2022 (64 matches, 1,494 shots), built to estimate the probability that any given shot
+becomes a goal — and benchmarked directly against StatsBomb's own published xG values.
 
----
+## Why this project
 
-## Live Projects
+Built as a focused extension of the predictive-modeling and time-series methods used
+throughout the rest of this portfolio's neuroscience work, applied to a new domain:
+football performance data. Same toolkit (feature engineering → classification → calibrated
+evaluation), new signal.
 
-### NB01 · MMASH: Activity, Sleep & HRV Exploration
-Exploratory analysis of the [MMASH dataset](https://physionet.org/content/mmash/1.0.0/) (Multilevel Monitoring of Activity and Sleep in Healthy People, PhysioNet). Covers behavior distributions, RR interval dynamics, RMSSD-based HRV, and multi-day physiological patterns across 22 subjects.
+## Result
 
-**Tools:** pandas, numpy, matplotlib, seaborn, scipy
+| Model | AUC | LogLoss | Brier |
+|---|---|---|---|
+| Logistic Regression (geometry + context) | 0.799 | 0.298 | 0.085 |
+| XGBoost (geometry + context) | 0.813 | 0.298 | 0.087 |
+| **XGBoost + 360 freeze-frame** | **0.814** | **0.225** | **0.062** |
+| StatsBomb xG (proprietary benchmark) | 0.887 | 0.218 | 0.065 |
 
-### NB08 · Sport Biomechanics Literature Navigator
-AI-powered research assistant that fetches real PubMed abstracts, builds a knowledge graph, and uses RAG + LLM synthesis to answer biomechanics questions with cited evidence.
+The model lands within ~0.07 AUC of StatsBomb's commercial xG model, using only public
+open data — no proprietary tracking feed, no ball/player speed — and is well-calibrated
+(predicted probabilities track observed goal rates closely across the full range).
 
-**Pipeline:** PubMed E-utilities API → overlapping chunk windows → `all-MiniLM-L6-v2` embeddings → NetworkX knowledge graph → cosine similarity retrieval → LLaMA 3.3 70B via Groq API
+## Notebook
 
-**Tools:** sentence-transformers, NetworkX, Groq API, pandas
+[`09_xg_model_worldcup2022.ipynb`](09_xg_model_worldcup2022.ipynb) — full pipeline,
+data pull through evaluation, fully executed with outputs.
 
-#### Running NB08
-The repo includes pre-computed files so you can skip the PubMed fetch:
-- `notebooks/data/chunks.csv` — chunked abstracts
-- `notebooks/data/embeddings.npy` — pre-computed sentence embeddings
+#### DATASET
+FIFA World Cup 2022 — 64 matches · StatsBomb Open Data (CC BY-NC-SA 4.0)
 
-The only API key required is **Groq** (free at [console.groq.com](https://console.groq.com)) for the LLM synthesis step. Create a `.env` file in the `notebooks/` folder:
-```
-GROQ_API_KEY=your_key_here
-```
+#### FEATURES
+Shot distance & angle, body part, shot type/technique, pressure, 360 freeze-frame
+defenders-in-cone & goalkeeper distance
 
-(add the `.env` file in the .gitignore) 
+#### MODELS
+Logistic Regression baseline, XGBoost (geometry-only and +360 variants)
 
-Install dependencies:
-```bash
-pip install groq sentence-transformers==2.7.0 transformers==4.40.0 "numpy<2" networkx requests python-dotenv
-```
+#### EVALUATION
+ROC-AUC, log-loss, Brier score, calibration curve — benchmarked against StatsBomb's
+own xG
 
----
+## A feature worth highlighting
 
-## Interactive Tools
+Counting opposing players in the shooter's angular cone toward goal (derived from 360
+freeze-frame data) produces a clean, monotonic relationship with scoring probability:
 
-- **Running Training Planner** — pace zones, weekly load, taper planning, 400m lap times calculator
-- **From Beat to Pace** — music BPM to running cadence matcher
-- **Visualize Your Exercise 🏋️** — browse 100+ exercises by muscle group or paste any workout list; live fuzzy matching, animated demos, English & Portuguese support. Built with [Claude](https://claude.ai) · Images: [free-exercise-db](https://github.com/yuhonas/free-exercise-db)
+| Defenders in shot cone | Goal conversion rate | n shots |
+|---|---|---|
+| 0 | 35.0% | 117 |
+| 1 | 12.4% | 688 |
+| 2 | 5.3% | 419 |
+| 3+ | 1.9% | 212 |
 
-
----
-
-## Project Building (In Progress)
-
-| # | Title | Domain |
-|---|-------|--------|
-| NB02 | Activity Detection: Supervised vs Unsupervised | ML · Wearables |
-| NB03 | ECG & PPG Signal Processing | Biosignals · DSP |
-| NB04 | Sleep Staging & Cardiac Dynamics | Sleep · HRV |
-| NB06 | Running Shoe Drop vs Race Performance (1975–2024) | Sports · Biomechanics |
-| NB07 | Music BPM × Running Pace | Audio · Sports |
-| NB09 | Banking Churn & Customer Lifetime Value | Consulting · ML |
-
-
----
-
-## Repository Structure
-
-```
-notebooks/          # analysis notebooks
-notebooks/figures/  # generated plots
-notebooks/data/     # cached data (chunks, embeddings)
-figures/            # portfolio site figures
-index.html          # portfolio website (GitHub Pages)
-running_training_planner.html
-session_builder.html
-```
-
----
+This single feature meaningfully improved both log-loss and calibration over geometry
+alone — a direct, data-confirmed version of the basic football intuition that a blocked
+shooting lane lowers scoring chances regardless of distance or angle.
 
 ## Stack
 
-Python 3.11 · pandas · numpy · scikit-learn · matplotlib · sentence-transformers · NetworkX · Groq API · Plotly
+Python · pandas · NumPy · scikit-learn · XGBoost · statsbombpy · Matplotlib
+
+## Next steps
+
+- Possession-value / expected threat (xT) modeling — valuing all on-ball actions, not just shots
+- Match outcome prediction from aggregated team-level xG
+- Re-running this pipeline on World Cup 2026 shot data once open event data is released
+
+---
+
+Dataset: [StatsBomb Open Data ↗](https://github.com/statsbomb/open-data) (CC BY-NC-SA 4.0)
